@@ -26,5 +26,5 @@ AC_CHECK_HEADER_STDBOOL
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([clock_gettime], [], [AC_MSG_ERROR([clock_gettime not found])])
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile data/Makefile])
 AC_OUTPUT
