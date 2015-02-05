@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 
+#define PATH_MAX 4096
+
 struct shot_data {
 	SDL_Point position;
 	SDL_Point direction;
@@ -18,8 +20,20 @@ struct game_data {
 	int done;
 };
 
+enum {
+	IMAGE_SHIP = 0,
+	IMAGE_ENEMY,
+	IMAGE_COUNT
+};
+
+static char * const image_filename[] = {
+	[IMAGE_SHIP] = "ship.bmp",
+	[IMAGE_ENEMY] = "enemy.bmp"
+};
+
 struct display_data {
 	SDL_Window *window;
+	SDL_Surface *images[IMAGE_COUNT];
 };
 
 enum input_source {
