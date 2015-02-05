@@ -4,29 +4,29 @@
 #include <SDL2/SDL.h>
 
 #define PATH_MAX 4096
-#define ENEMIES_MAX 40
+#define ENEMIES_MAX 100
+#define ENEMY_DX_DEFAULT 5
 
 struct shot_data {
 	SDL_Point position;
 	SDL_Point direction;
 };
 
-struct spaceship_data {
-	SDL_Rect rect;
-	struct shot_data shot;
-	int frame;
-};
-
-enum enemy_state {
-	NON_ATTACKING = 0,
+enum spaceship_animation {
+	NON_ATTACKING_1 = 0,
+	NON_ATTACKING_2 = 1,
 	ATTACKING
 };
 
 static SDL_Rect const enemy_sprite_rect[][10] = {
-	[NON_ATTACKING] = {
+	[NON_ATTACKING_1] = {
 		{.x = 0, .y = 0, .w = 45, .h = 33},
 		{.x = 51, .y = 0, .w = 46, .h = 33},
 		{.x = 104, .y = 0, .w = 46, .h = 33},
+		{.x = 0, .y = 0, .w = 0, .h = 0}
+	},
+	[NON_ATTACKING_2] = {
+		{.x = 0, .y = 0, .w = 43, .h = 47},
 		{.x = 0, .y = 0, .w = 0, .h = 0}
 	},
 	[ATTACKING] = {
@@ -34,9 +34,20 @@ static SDL_Rect const enemy_sprite_rect[][10] = {
 	}
 };
 
+struct spaceship_data {
+	SDL_Rect rect;
+	struct shot_data shot;
+	int image;
+	int frame;
+	int animation;
+};
+
 struct game_data {
 	struct spaceship_data spaceship;
 	struct spaceship_data enemies[ENEMIES_MAX];
+	int enemy_minx;
+	int enemy_maxx;
+	int enemy_dx;
 	int enemy_count;
 	int done;
 	int width;
@@ -46,6 +57,9 @@ struct game_data {
 enum {
 	IMAGE_SHIP = 0,
 	IMAGE_ENEMY1A,
+	IMAGE_ENEMY2A,
+	IMAGE_ENEMY3A,
+	IMAGE_ENEMY4A,
 	IMAGE_COUNT
 };
 
@@ -55,12 +69,15 @@ enum {
 };
 
 static int const timer_duration[] = {
-	[TIMER_ENEMY_ANIMATION] = 400
+	[TIMER_ENEMY_ANIMATION] = 250
 };
 
 static char * const image_filename[] = {
 	[IMAGE_SHIP] = "ship.bmp",
-	[IMAGE_ENEMY1A] = "enemy1a.bmp"
+	[IMAGE_ENEMY1A] = "enemy1a.bmp",
+	[IMAGE_ENEMY2A] = "enemy2a.bmp",
+	[IMAGE_ENEMY3A] = "enemy3a.bmp",
+	[IMAGE_ENEMY4A] = "enemy4a.bmp"
 };
 
 struct display_data {

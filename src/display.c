@@ -40,7 +40,6 @@ void display_render(struct display_data *display, struct game_data *game)
 
 	SDL_Surface *surface = SDL_GetWindowSurface(display->window);
 	SDL_Surface *spaceship_surface = display->images[IMAGE_SHIP];
-	SDL_Surface *enemy_surface =  display->images[IMAGE_ENEMY1A];
 
 	int black = SDL_MapRGB(surface->format, 0, 0, 0);
 
@@ -49,9 +48,10 @@ void display_render(struct display_data *display, struct game_data *game)
 
 	for (i = 0; i < game->enemy_count; i++) {
 		struct spaceship_data *enemy = &game->enemies[i];
+		SDL_Surface *enemy_surface =  display->images[enemy->image];
 
 		SDL_BlitSurface(enemy_surface,
-				&enemy_sprite_rect[NON_ATTACKING][enemy->frame],
+				&enemy_sprite_rect[enemy->animation][enemy->frame],
 				surface,
 				&enemy->rect);
 	}
