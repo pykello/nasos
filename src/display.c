@@ -40,12 +40,23 @@ void display_render(struct display_data *display, struct game_data *game)
 	SDL_Rect ship_rect = {
 		.x = spaceship->position.x,
 		.y = spaceship->position.y,
-		.w = 10,
-		.h = 20
+		.w = 45,
+		.h = 31
 	};
 
 	SDL_FillRect(surface, NULL, black);
-	SDL_FillRect(surface, &ship_rect, white);
+	
+	SDL_Surface *spaceship_surface = SDL_LoadBMP("data/ship.bmp");
+	if (spaceship_surface == NULL)
+	{
+		SDL_FillRect(surface, &ship_rect, white);
+	}
+	else
+	{
+		SDL_SetColorKey(spaceship_surface, SDL_TRUE, 0x008800);
+		SDL_BlitSurface(spaceship_surface, NULL, surface, &ship_rect);
+		SDL_FreeSurface(spaceship_surface);
+	}
 
 	SDL_UpdateWindowSurface(display->window);
 }

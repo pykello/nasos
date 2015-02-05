@@ -1,5 +1,7 @@
 AM_CFLAGS = -I$(top_srcdir)/include \
-	    -Wall -W -Wno-unused-parameter -Wno-pointer-sign
+	    -Wall -W -Wno-unused-parameter -Wno-pointer-sign\
+	    -DDATADIR=\"$(pkgdatadir)\"\
+	    -DSRCDIR=\"$(top_srcdir)\"
 
 bin_PROGRAMS = nasos
 

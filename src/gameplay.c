@@ -5,7 +5,7 @@ struct game_data * game_init(void)
 	struct game_data *game = malloc(sizeof(struct game_data));
 	game->done = 0;
 	game->spaceship = (struct spaceship_data) {
-		.position = {.x = 200, .y = 440}
+		.position = {.x = 200, .y = 430}
 	};
 
 	return game;
