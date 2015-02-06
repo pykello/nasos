@@ -92,7 +92,7 @@ static void init_enemies(struct game_data *game)
 	for (i = 0; i < 2; i++) {
 		game->enemies[enemy_count++] = (struct spaceship_data) {
 			.center = {
-				.x = 225 + 195 * i, .y = 45
+				.x = 162 + 132 * i, .y = 55
 			},
 			.image = IMAGE_ENEMY4A,
 			.animation = NON_ATTACKING_2,
@@ -104,7 +104,7 @@ static void init_enemies(struct game_data *game)
 	for (i = 0; i < 6; i++) {
 		game->enemies[enemy_count++] = (struct spaceship_data) {
 			.center = {
-				.x = 160 + 65 * i, .y = 100
+				.x = 118 + 44 * i, .y = 90
 			},
 			.image = IMAGE_ENEMY3A,
 			.animation = NON_ATTACKING_1,
@@ -116,7 +116,7 @@ static void init_enemies(struct game_data *game)
 	for (i = 0; i < 8; i++) {
 		game->enemies[enemy_count++] = (struct spaceship_data) {
 			.center = {
-				.x = 95 + 65 * i, .y = 150
+				.x = 74 + 44 * i, .y = 125
 			},
 			.image = IMAGE_ENEMY2A,
 			.animation = NON_ATTACKING_1,
@@ -129,7 +129,7 @@ static void init_enemies(struct game_data *game)
 		for (i = 0; i < 10; i++) {
 			game->enemies[enemy_count++] = (struct spaceship_data) {
 				.center = {
-					.x = 30 + 65 * i, .y = 200 + 50 * j
+					.x = 30 + 44 * i, .y = 160 + 35 * j
 				},
 				.image = IMAGE_ENEMY1A,
 				.animation = NON_ATTACKING_1,

@@ -21,17 +21,17 @@ enum spaceship_animation {
 
 static SDL_Rect const enemy_sprite_rect[][10] = {
 	[SPACESHIP] = {
-		{.x = 0, .y = 0, .w = 53, .h = 65},
+		{.x = 0, .y = 0, .w = 36, .h = 44},
 		{.x = 0, .y = 0, .w = 0, .h = 0}
 	},
 	[NON_ATTACKING_1] = {
-		{.x = 0, .y = 0, .w = 45, .h = 33},
-		{.x = 51, .y = 0, .w = 46, .h = 33},
-		{.x = 104, .y = 0, .w = 46, .h = 33},
+		{.x = 0, .y = 0, .w = 30, .h = 22},
+		{.x = 34, .y = 0, .w = 30, .h = 22},
+		{.x = 70, .y = 0, .w = 30, .h = 22},
 		{.x = 0, .y = 0, .w = 0, .h = 0}
 	},
 	[NON_ATTACKING_2] = {
-		{.x = 0, .y = 0, .w = 43, .h = 47},
+		{.x = 0, .y = 0, .w = 29, .h = 32},
 		{.x = 0, .y = 0, .w = 0, .h = 0}
 	},
 	[ATTACKING] = {
