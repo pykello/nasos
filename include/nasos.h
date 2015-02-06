@@ -19,7 +19,8 @@ struct fire_data {
 enum spaceship_state {
 	WAITING,
 	JUMPING,
-	DYING
+	DYING,
+	DEAD
 };
 
 enum spaceship_animation {
@@ -140,6 +141,8 @@ void game_handle_timer(struct game_data *, int);
 struct display_data * display_init(struct game_data *);
 void display_destroy(struct display_data *);
 void display_render(struct display_data *, struct game_data *);
+SDL_Rect create_spaceship_rect(struct spaceship_data *ship);
+SDL_Rect create_rect(SDL_Point center, int w, int h);
 
 /* input.c */
 struct input_data * input_init(void);

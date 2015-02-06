@@ -61,18 +61,12 @@ static void draw_spaceship(struct display_data *display,
 	SDL_Surface *screen_surface = SDL_GetWindowSurface(display->window);
 
 	SDL_Surface *spaceship_surface = display->images[spaceship->image];
-	SDL_Rect spaceship_rect = enemy_sprite_rect[spaceship->animation][spaceship->frame];
-	SDL_Point center = spaceship->center;
+	SDL_Rect image_rect = enemy_sprite_rect[spaceship->animation][spaceship->frame];
+	SDL_Rect target_rect = create_spaceship_rect(spaceship);
 
-	SDL_Rect target_rect = {
-		.x = center.x - spaceship_rect.w / 2,
-		.y = center.y - spaceship_rect.h / 2,
-		.w = spaceship_rect.w,
-		.h = spaceship_rect.h
-	};
-
-	SDL_BlitSurface(spaceship_surface, &spaceship_rect,
-			screen_surface, &target_rect);
+	if (spaceship->state != DEAD)
+		SDL_BlitSurface(spaceship_surface, &image_rect,
+				screen_surface, &target_rect);
 }
 
 static void draw_fire(struct display_data *display,
@@ -81,13 +75,8 @@ static void draw_fire(struct display_data *display,
 	SDL_Surface *screen_surface = SDL_GetWindowSurface(display->window);
 	SDL_Surface *fire_surface = display->images[fire->image];
 	SDL_Point center = fire->center;
-
-	SDL_Rect target_rect = {
-		.x = center.x - fire_surface->w / 2,
-		.y = center.y - fire_surface->h / 2,
-		.w = fire_surface->w,
-		.h = fire_surface->h
-	};
+	SDL_Rect target_rect = create_rect(center, fire_surface->w,
+					   fire_surface->h);
 
 	if (fire->active)
 		SDL_BlitSurface(fire_surface, NULL,
@@ -137,3 +126,24 @@ static void free_images(struct display_data *display)
 	for (i = 0; i < IMAGE_COUNT; i++)
 		SDL_FreeSurface(display->images[i]);
 }
+
+SDL_Rect create_spaceship_rect(struct spaceship_data *ship)
+{
+	SDL_Rect image_rect = enemy_sprite_rect[ship->animation][ship->frame];
+	SDL_Rect spaceship_rect = create_rect(ship->center, image_rect.w, image_rect.h);
+
+	return spaceship_rect;
+}
+
+SDL_Rect create_rect(SDL_Point center, int w, int h)
+{
+	SDL_Rect rect = {
+		.x = center.x - w / 2,
+		.y = center.y - h / 2,
+		.w = w,
+		.h = h
+	};
+
+	return rect;
+}
+

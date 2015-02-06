@@ -8,6 +8,7 @@ static void update_waiting_enemies(struct game_data *game);
 static void update_jumping_enemies(struct game_data *game);
 static void update_fires(struct game_data *game);
 static void update_fire(struct fire_data *fire, int height);
+static void kill_enemies(struct game_data *game);
 static void init_enemies(struct game_data *game);
 
 struct game_data * game_init(void)
@@ -78,6 +79,7 @@ void game_handle_timer(struct game_data *game, int timer_id)
 
 	case TIMER_FIRE:
 		update_fires(game);
+		kill_enemies(game);
 		break;
 	}
 }
@@ -186,6 +188,28 @@ static void update_fire(struct fire_data *fire, int height)
 
 	if (fire->center.y < 5 || fire->center.y > height - 5)
 		fire->active = 0;
+}
+
+static void kill_enemies(struct game_data *game)
+{
+	int i = 0;
+
+	if (!game->spaceship_fire.active)
+		return;
+
+	for (i = 0; i < game->enemy_count; i++) {
+		struct spaceship_data *enemy = &game->enemies[i];
+		SDL_Rect enemy_rect = create_spaceship_rect(enemy);
+		SDL_Rect fire_rect = create_rect(game->spaceship_fire.center, 4, 13);
+
+		if (enemy->state == DEAD || enemy->state == DYING)
+			continue;
+
+		if (SDL_HasIntersection(&enemy_rect, &fire_rect)) {
+			enemy->state = DEAD;
+			game->spaceship_fire.active = 0;
+		}
+	}
 }
 
 static void init_enemies(struct game_data *game)
