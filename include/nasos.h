@@ -134,6 +134,7 @@ enum input_source {
 
 struct input_data {
 	enum input_source source;
+	unsigned int last_arrow_report[2];
 };
 
 struct timer_data {
