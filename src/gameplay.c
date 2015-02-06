@@ -1,6 +1,10 @@
 #include <nasos.h>
 #include <stdlib.h>
 
+#define PI 3.1415
+
+static void update_waiting_enemies(struct game_data *game);
+static void update_jumping_enemies(struct game_data *game);
 static void init_enemies(struct game_data *game);
 
 struct game_data * game_init(void)
@@ -54,31 +58,76 @@ void game_handle_timer(struct game_data *game, int timer_id)
 	switch (timer_id)
 	{
 	case TIMER_ENEMY_ANIMATION:
-	{
-		int i = 0;
-		for (i = 0; i < game->enemy_count; i++) {
-			struct spaceship_data *enemy = &game->enemies[i];
+		update_waiting_enemies(game);
+		break;
 
-			enemy->frame++;
-			if (enemy_sprite_rect[enemy->animation][enemy->frame].w == 0)
-				enemy->frame = 0;
-
-			enemy->center.x += game->enemy_dx;
-		}
-
-		game->enemy_minx += game->enemy_dx;
-		game->enemy_maxx += game->enemy_dx;
-
-		if (game->enemy_minx <= 30) {
-			game->enemy_dx = ENEMY_DX_DEFAULT;
-		}
-
-		if (game->enemy_maxx >= game->width - 30) {
-			game->enemy_dx = -ENEMY_DX_DEFAULT;
-		}
-
+	case TIMER_ENEMY_JUMP:
+		update_jumping_enemies(game);
 		break;
 	}
+}
+
+static void update_waiting_enemies(struct game_data *game)
+{
+	int i = 0;
+	for (i = 0; i < game->enemy_count; i++) {
+		struct spaceship_data *enemy = &game->enemies[i];
+		if (enemy->state != WAITING)
+			continue;
+
+		if (rand() % 800 == 0) {
+			enemy->state = JUMPING;
+			enemy->jump_degree = -PI / 2;
+			enemy->jump_x = enemy->center.x;
+			enemy->jump_y = enemy->center.y;
+			enemy->jump_speed = 6;
+			enemy->jump_steps = rand() % 8 + 37;
+
+			if (enemy->center.x < game->spaceship.center.x)
+				enemy->jump_degree_delta = -PI / 35;
+			else
+				enemy->jump_degree_delta = PI / 35;	
+
+			continue;
+		}
+
+		enemy->frame++;
+		if (enemy_sprite_rect[enemy->animation][enemy->frame].w == 0)
+			enemy->frame = 0;
+
+		enemy->center.x += game->enemy_dx;
+	}
+
+	game->enemy_minx += game->enemy_dx;
+	game->enemy_maxx += game->enemy_dx;
+
+	if (game->enemy_minx <= 30) {
+		game->enemy_dx = ENEMY_DX_DEFAULT;
+	}
+
+	if (game->enemy_maxx >= game->width - 30) {
+		game->enemy_dx = -ENEMY_DX_DEFAULT;
+	}
+}
+
+static void update_jumping_enemies(struct game_data *game)
+{
+	int i = 0;
+	for (i = 0; i < game->enemy_count; i++) {
+		struct spaceship_data *enemy = &game->enemies[i];
+		if (enemy->state != JUMPING)
+			continue;
+
+		enemy->jump_x += enemy->jump_speed * cos(enemy->jump_degree);
+		enemy->jump_y += enemy->jump_speed * sin(enemy->jump_degree);
+
+		enemy->center.x = (int) enemy->jump_x;
+		enemy->center.y = (int) enemy->jump_y;
+
+		if (enemy->jump_steps > 0) {
+			enemy->jump_degree += enemy->jump_degree_delta;
+			enemy->jump_steps--;
+		}
 	}
 }
 
@@ -96,7 +145,8 @@ static void init_enemies(struct game_data *game)
 			},
 			.image = IMAGE_ENEMY4A,
 			.animation = NON_ATTACKING_2,
-			.frame = 0
+			.frame = 0,
+			.state = WAITING
 		};
 	}
 
@@ -108,7 +158,8 @@ static void init_enemies(struct game_data *game)
 			},
 			.image = IMAGE_ENEMY3A,
 			.animation = NON_ATTACKING_1,
-			.frame = rand() % 3
+			.frame = rand() % 3,
+			.state = WAITING
 		};
 	}
 
@@ -120,7 +171,8 @@ static void init_enemies(struct game_data *game)
 			},
 			.image = IMAGE_ENEMY2A,
 			.animation = NON_ATTACKING_1,
-			.frame = rand() % 3
+			.frame = rand() % 3,
+			.state = WAITING
 		};
 	}
 
@@ -133,7 +185,8 @@ static void init_enemies(struct game_data *game)
 				},
 				.image = IMAGE_ENEMY1A,
 				.animation = NON_ATTACKING_1,
-				.frame = rand() % 3
+				.frame = rand() % 3,
+				.state = WAITING
 			};
 		}
 	}

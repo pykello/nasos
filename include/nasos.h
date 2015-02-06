@@ -12,6 +12,12 @@ struct shot_data {
 	SDL_Point direction;
 };
 
+enum spaceship_state {
+	WAITING,
+	JUMPING,
+	DYING
+};
+
 enum spaceship_animation {
 	NON_ATTACKING_1 = 0,
 	NON_ATTACKING_2 = 1,
@@ -42,9 +48,16 @@ static SDL_Rect const enemy_sprite_rect[][10] = {
 struct spaceship_data {
 	SDL_Point center;
 	struct shot_data shot;
-	int image;
-	int frame;
-	int animation;
+	int image; /* IMAGE_SHIP, etc. */
+	int frame; /* which frame in image */
+	int animation; /* how to divide images into frames */
+	int state;
+	double jump_degree;
+	double jump_degree_delta;
+	double jump_x;
+	double jump_y;
+	double jump_speed;
+	int jump_steps;
 };
 
 struct game_data {
@@ -70,11 +83,13 @@ enum {
 
 enum {
 	TIMER_ENEMY_ANIMATION = 0,
+	TIMER_ENEMY_JUMP,
 	TIMER_COUNT
 };
 
 static int const timer_duration[] = {
-	[TIMER_ENEMY_ANIMATION] = 250
+	[TIMER_ENEMY_ANIMATION] = 250,
+	[TIMER_ENEMY_JUMP] = 40
 };
 
 static char * const image_filename[] = {
