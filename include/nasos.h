@@ -7,9 +7,13 @@
 #define ENEMIES_MAX 100
 #define ENEMY_DX_DEFAULT 5
 
-struct shot_data {
-	SDL_Point position;
-	SDL_Point direction;
+struct fire_data {
+	int active;
+	SDL_Point center;
+	double dy;
+	double y;
+	double speed;
+	int image;
 };
 
 enum spaceship_state {
@@ -27,7 +31,8 @@ enum spaceship_animation {
 
 static SDL_Rect const enemy_sprite_rect[][10] = {
 	[SPACESHIP] = {
-		{.x = 0, .y = 0, .w = 36, .h = 44},
+		{.x = 0, .y = 0, .w = 36, .h = 56},
+		{.x = 40, .y = 0, .w = 36, .h = 56},
 		{.x = 0, .y = 0, .w = 0, .h = 0}
 	},
 	[NON_ATTACKING_1] = {
@@ -47,7 +52,6 @@ static SDL_Rect const enemy_sprite_rect[][10] = {
 
 struct spaceship_data {
 	SDL_Point center;
-	struct shot_data shot;
 	int image; /* IMAGE_SHIP, etc. */
 	int frame; /* which frame in image */
 	int animation; /* how to divide images into frames */
@@ -63,6 +67,8 @@ struct spaceship_data {
 struct game_data {
 	struct spaceship_data spaceship;
 	struct spaceship_data enemies[ENEMIES_MAX];
+	struct fire_data spaceship_fire;
+	struct fire_data enemy_fires[ENEMIES_MAX];
 	int enemy_minx;
 	int enemy_maxx;
 	int enemy_dx;
@@ -78,18 +84,21 @@ enum {
 	IMAGE_ENEMY2A,
 	IMAGE_ENEMY3A,
 	IMAGE_ENEMY4A,
+	IMAGE_PLAYER_FIRE,
 	IMAGE_COUNT
 };
 
 enum {
 	TIMER_ENEMY_ANIMATION = 0,
 	TIMER_ENEMY_JUMP,
+	TIMER_FIRE,
 	TIMER_COUNT
 };
 
 static int const timer_duration[] = {
 	[TIMER_ENEMY_ANIMATION] = 250,
-	[TIMER_ENEMY_JUMP] = 40
+	[TIMER_ENEMY_JUMP] = 40,
+	[TIMER_FIRE] = 40
 };
 
 static char * const image_filename[] = {
@@ -97,7 +106,8 @@ static char * const image_filename[] = {
 	[IMAGE_ENEMY1A] = "enemy1a.bmp",
 	[IMAGE_ENEMY2A] = "enemy2a.bmp",
 	[IMAGE_ENEMY3A] = "enemy3a.bmp",
-	[IMAGE_ENEMY4A] = "enemy4a.bmp"
+	[IMAGE_ENEMY4A] = "enemy4a.bmp",
+	[IMAGE_PLAYER_FIRE] = "ship_fire.bmp"
 };
 
 struct display_data {

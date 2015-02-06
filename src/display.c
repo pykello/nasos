@@ -3,6 +3,8 @@
 
 static void draw_spaceship(struct display_data *display,
 			   struct spaceship_data *spaceship);
+static void draw_fire(struct display_data *display,
+		      struct fire_data *fire);
 static void load_images(struct display_data *display);
 static void free_images(struct display_data *display);
 
@@ -45,6 +47,7 @@ void display_render(struct display_data *display, struct game_data *game)
 	SDL_FillRect(surface, NULL, black);
 
 	draw_spaceship(display, &game->spaceship);
+	draw_fire(display, &game->spaceship_fire);
 
 	for (i = 0; i < game->enemy_count; i++)
 		draw_spaceship(display, &game->enemies[i]);
@@ -70,6 +73,25 @@ static void draw_spaceship(struct display_data *display,
 
 	SDL_BlitSurface(spaceship_surface, &spaceship_rect,
 			screen_surface, &target_rect);
+}
+
+static void draw_fire(struct display_data *display,
+		      struct fire_data *fire)
+{
+	SDL_Surface *screen_surface = SDL_GetWindowSurface(display->window);
+	SDL_Surface *fire_surface = display->images[fire->image];
+	SDL_Point center = fire->center;
+
+	SDL_Rect target_rect = {
+		.x = center.x - fire_surface->w / 2,
+		.y = center.y - fire_surface->h / 2,
+		.w = fire_surface->w,
+		.h = fire_surface->h
+	};
+
+	if (fire->active)
+		SDL_BlitSurface(fire_surface, NULL,
+				screen_surface, &target_rect);
 }
 
 static void load_images(struct display_data *display)

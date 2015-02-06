@@ -3,8 +3,11 @@
 
 #define PI 3.1415
 
+static void player_fire(struct game_data *game);
 static void update_waiting_enemies(struct game_data *game);
 static void update_jumping_enemies(struct game_data *game);
+static void update_fires(struct game_data *game);
+static void update_fire(struct fire_data *fire, int height);
 static void init_enemies(struct game_data *game);
 
 struct game_data * game_init(void)
@@ -19,6 +22,11 @@ struct game_data * game_init(void)
 		.frame = 0,
 		.animation = SPACESHIP
 	};
+
+	game->spaceship_fire = (struct fire_data) {
+		.active = 0
+	};
+
 	init_enemies(game);
 
 	return game;
@@ -42,6 +50,9 @@ void game_handle_keypress(struct game_data *game, int keycode)
 	case 'q':
 		game->done = 1;
 		break;
+	case ' ':
+		player_fire(game);
+		break;
 	case SDLK_LEFT:
 		if (ship->center.x > 30)
 			ship->center.x -= 5;
@@ -64,7 +75,31 @@ void game_handle_timer(struct game_data *game, int timer_id)
 	case TIMER_ENEMY_JUMP:
 		update_jumping_enemies(game);
 		break;
+
+	case TIMER_FIRE:
+		update_fires(game);
+		break;
 	}
+}
+
+static void player_fire(struct game_data *game)
+{
+	SDL_Point player_center = game->spaceship.center;
+	int x = player_center.x;
+	int y = player_center.y - 23;
+
+	if (game->spaceship_fire.active)
+		return;
+
+	game->spaceship.frame = 1;
+	game->spaceship_fire = (struct fire_data) {
+		.center = {.x = x, .y = y},
+		.y = (double) y,
+		.dy = -1,
+		.speed = 12,
+		.active = 1,
+		.image = IMAGE_PLAYER_FIRE
+	};
 }
 
 static void update_waiting_enemies(struct game_data *game)
@@ -129,6 +164,28 @@ static void update_jumping_enemies(struct game_data *game)
 			enemy->jump_steps--;
 		}
 	}
+}
+
+static void update_fires(struct game_data *game)
+{
+	update_fire(&game->spaceship_fire, game->height);
+
+	if (game->spaceship_fire.active)
+		game->spaceship.frame = 1;
+	else
+		game->spaceship.frame = 0;
+}
+
+static void update_fire(struct fire_data *fire, int height)
+{
+	if (!fire->active)
+		return;
+
+	fire->y += fire->speed * fire->dy;
+	fire->center.y = (int) fire->y;
+
+	if (fire->center.y < 5 || fire->center.y > height - 5)
+		fire->active = 0;
 }
 
 static void init_enemies(struct game_data *game)
