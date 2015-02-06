@@ -7,6 +7,7 @@ static void player_fire(struct game_data *game);
 static void update_waiting_enemies(struct game_data *game);
 static void update_jumping_enemies(struct game_data *game);
 static void update_dying_enemies(struct game_data *game);
+static void update_dying_player(struct game_data *game);
 static void update_fires(struct game_data *game);
 static void update_fire(struct fire_data *fire, int height);
 static void kill_enemies(struct game_data *game);
@@ -58,11 +59,11 @@ void game_handle_keypress(struct game_data *game, int keycode)
 		break;
 	case SDLK_LEFT:
 		if (ship->center.x > 30)
-			ship->center.x -= 5;
+			ship->center.x -= 8;
 		break;
 	case SDLK_RIGHT:
 		if (ship->center.x < game->width - 30)
-			ship->center.x += 5;
+			ship->center.x += 8;
 		break;
 	}
 }
@@ -77,6 +78,7 @@ void game_handle_timer(struct game_data *game, int timer_id)
 
 	case TIMER_ENEMY_DYING:
 		update_dying_enemies(game);
+		update_dying_player(game);
 		break;
 
 	case TIMER_ENEMY_JUMP:
@@ -189,14 +191,29 @@ static void update_dying_enemies(struct game_data *game)
 	}
 }
 
+static void update_dying_player(struct game_data *game)
+{
+	struct spaceship_data *player = &game->spaceship;
+	if (player->state != DYING)
+		return;
+
+	player->frame++;
+	if (enemy_sprite_rect[player->animation][player->frame].w == 0)
+		player->state = DEAD;
+}
+
 static void update_fires(struct game_data *game)
 {
+	struct spaceship_data *player = &game->spaceship;
+
 	update_fire(&game->spaceship_fire, game->height);
 
-	if (game->spaceship_fire.active)
-		game->spaceship.frame = 1;
-	else
-		game->spaceship.frame = 0;
+	if (player->state != DEAD && player->state != DYING) {
+		if (game->spaceship_fire.active)
+			player->frame = 1;
+		else
+			player->frame = 0;
+	}
 }
 
 static void update_fire(struct fire_data *fire, int height)
@@ -239,7 +256,11 @@ static void kill_enemies(struct game_data *game)
 static void kill_player(struct game_data *game)
 {
 	int i = 0;
-	SDL_Rect player_rect = create_spaceship_rect(&game->spaceship);
+	struct spaceship_data *player = &game->spaceship;
+	SDL_Rect player_rect = create_spaceship_rect(player);
+
+	if (player->state == DEAD || player->state == DYING)
+		return;
 
 	for (i = 0; i < game->enemy_count; i++) {
 		SDL_Rect enemy_rect = create_spaceship_rect(&game->enemies[i]);
@@ -249,7 +270,10 @@ static void kill_player(struct game_data *game)
 			continue;
 
 		if (SDL_HasIntersection(&enemy_rect, &player_rect)) {
-			game->spaceship.state = DEAD;
+			player->state = DYING;
+			player->frame = 0;
+			player->image = IMAGE_PLAYER_DYING;
+			player->animation = PLAYER_DYING;
 			break;
 		}
 	}
