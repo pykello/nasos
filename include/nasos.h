@@ -5,6 +5,7 @@
 
 #define PATH_MAX 4096
 #define ENEMIES_MAX 100
+#define FIRES_MAX 20
 #define ENEMY_DX_DEFAULT 5
 
 struct fire_data {
@@ -85,7 +86,7 @@ struct game_data {
 	struct spaceship_data spaceship;
 	struct spaceship_data enemies[ENEMIES_MAX];
 	struct fire_data spaceship_fire;
-	struct fire_data enemy_fires[ENEMIES_MAX];
+	struct fire_data enemy_fires[FIRES_MAX];
 	int enemy_minx;
 	int enemy_maxx;
 	int enemy_dx;
@@ -102,6 +103,7 @@ enum {
 	IMAGE_ENEMY3A,
 	IMAGE_ENEMY4A,
 	IMAGE_PLAYER_FIRE,
+	IMAGE_ENEMY_FIRE,
 	IMAGE_ENEMY_DYING,
 	IMAGE_PLAYER_DYING,
 	IMAGE_COUNT
@@ -129,6 +131,7 @@ static char * const image_filename[] = {
 	[IMAGE_ENEMY3A] = "enemy3a.bmp",
 	[IMAGE_ENEMY4A] = "enemy4a.bmp",
 	[IMAGE_PLAYER_FIRE] = "ship_fire.bmp",
+	[IMAGE_ENEMY_FIRE] = "enemy_fire.bmp",
 	[IMAGE_ENEMY_DYING] = "enemy_dying.bmp",
 	[IMAGE_PLAYER_DYING] = "ship_dying.bmp"
 };

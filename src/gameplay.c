@@ -6,6 +6,7 @@
 static void player_fire(struct game_data *game);
 static void update_waiting_enemies(struct game_data *game);
 static void update_jumping_enemies(struct game_data *game);
+static void enemy_fire(struct game_data *game, SDL_Point center);
 static void update_dying_enemies(struct game_data *game);
 static void update_dying_player(struct game_data *game);
 static void update_fires(struct game_data *game);
@@ -32,6 +33,7 @@ struct game_data * game_init(void)
 	};
 
 	init_enemies(game);
+	memset(game->enemy_fires, 0, sizeof(game->enemy_fires));
 
 	return game;
 }
@@ -164,6 +166,9 @@ static void update_jumping_enemies(struct game_data *game)
 		if (enemy->state != JUMPING)
 			continue;
 
+		if (rand() % 10 == 0)
+			enemy_fire(game, enemy->center);
+
 		enemy->jump_x += enemy->jump_speed * cos(enemy->jump_degree);
 		enemy->jump_y += enemy->jump_speed * sin(enemy->jump_degree);
 
@@ -174,6 +179,24 @@ static void update_jumping_enemies(struct game_data *game)
 			enemy->jump_degree += enemy->jump_degree_delta;
 			enemy->jump_steps--;
 		}
+	}
+}
+
+static void enemy_fire(struct game_data *game, SDL_Point center)
+{
+	int i = 0;
+	for (i = 0; i < FIRES_MAX; i++) {
+		if (game->enemy_fires[i].active)
+			continue;
+
+		game->enemy_fires[i] = (struct fire_data) {
+			.center = {.x = center.x, .y = center.y + 10},
+			.y = center.y + 10,
+			.dy = 1,
+			.speed = 12,
+			.active = 1,
+			.image = IMAGE_ENEMY_FIRE
+		};
 	}
 }
 
@@ -204,9 +227,13 @@ static void update_dying_player(struct game_data *game)
 
 static void update_fires(struct game_data *game)
 {
+	int i = 0;
 	struct spaceship_data *player = &game->spaceship;
 
 	update_fire(&game->spaceship_fire, game->height);
+
+	for (i = 0; i < FIRES_MAX; i++)
+		update_fire(&game->enemy_fires[i], game->height);
 
 	if (player->state != DEAD && player->state != DYING) {
 		if (game->spaceship_fire.active)

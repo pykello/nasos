@@ -52,6 +52,9 @@ void display_render(struct display_data *display, struct game_data *game)
 	for (i = 0; i < game->enemy_count; i++)
 		draw_spaceship(display, &game->enemies[i]);
 
+	for (i = 0; i < FIRES_MAX; i++)
+		draw_fire(display, &game->enemy_fires[i]);
+
 	SDL_UpdateWindowSurface(display->window);
 }
 
