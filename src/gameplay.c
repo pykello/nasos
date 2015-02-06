@@ -283,26 +283,39 @@ static void kill_enemies(struct game_data *game)
 static void kill_player(struct game_data *game)
 {
 	int i = 0;
+	int should_die = 0;
 	struct spaceship_data *player = &game->spaceship;
 	SDL_Rect player_rect = create_spaceship_rect(player);
 
 	if (player->state == DEAD || player->state == DYING)
 		return;
 
-	for (i = 0; i < game->enemy_count; i++) {
+	for (i = 0; i < game->enemy_count && !should_die; i++) {
 		SDL_Rect enemy_rect = create_spaceship_rect(&game->enemies[i]);
 
 		if (game->enemies[i].state == DEAD ||
 		    game->enemies[i].state == DYING)
 			continue;
 
-		if (SDL_HasIntersection(&enemy_rect, &player_rect)) {
-			player->state = DYING;
-			player->frame = 0;
-			player->image = IMAGE_PLAYER_DYING;
-			player->animation = PLAYER_DYING;
-			break;
+		if (SDL_HasIntersection(&enemy_rect, &player_rect))
+			should_die = 1;
+	}
+
+	for (i = 0; i < FIRES_MAX && !should_die; i++) {
+		struct fire_data *fire = &game->enemy_fires[i];
+
+		if (fire->active) {
+			SDL_Rect fire_rect = create_rect(fire->center, 4, 13);
+			if (SDL_HasIntersection(&fire_rect, &player_rect))
+				should_die = 1;
 		}
+	}
+
+	if (should_die) {
+		player->state = DYING;
+		player->frame = 0;
+		player->image = IMAGE_PLAYER_DYING;
+		player->animation = PLAYER_DYING;
 	}
 }
 
