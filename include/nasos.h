@@ -27,6 +27,7 @@ enum spaceship_animation {
 	NON_ATTACKING_1 = 0,
 	NON_ATTACKING_2 = 1,
 	SPACESHIP = 2,
+	ENEMY_DYING = 3,
 	ATTACKING
 };
 
@@ -47,6 +48,13 @@ static SDL_Rect const enemy_sprite_rect[][10] = {
 		{.x = 0, .y = 0, .w = 0, .h = 0}
 	},
 	[ATTACKING] = {
+		{.x = 0, .y = 0, .w = 0, .h = 0}
+	},
+	[ENEMY_DYING] = {
+		{.x = 0, .y = 0, .w = 42, .h = 44},
+		{.x = 50, .y = 0, .w = 24, .h = 44},
+		{.x = 80, .y = 0, .w = 35, .h = 44},
+		{.x = 120, .y = 0, .w = 42, .h = 44},
 		{.x = 0, .y = 0, .w = 0, .h = 0}
 	}
 };
@@ -86,11 +94,13 @@ enum {
 	IMAGE_ENEMY3A,
 	IMAGE_ENEMY4A,
 	IMAGE_PLAYER_FIRE,
+	IMAGE_ENEMY_DYING,
 	IMAGE_COUNT
 };
 
 enum {
 	TIMER_ENEMY_ANIMATION = 0,
+	TIMER_ENEMY_DYING,
 	TIMER_ENEMY_JUMP,
 	TIMER_FIRE,
 	TIMER_COUNT
@@ -98,6 +108,7 @@ enum {
 
 static int const timer_duration[] = {
 	[TIMER_ENEMY_ANIMATION] = 250,
+	[TIMER_ENEMY_DYING] = 70,
 	[TIMER_ENEMY_JUMP] = 40,
 	[TIMER_FIRE] = 40
 };
@@ -108,7 +119,8 @@ static char * const image_filename[] = {
 	[IMAGE_ENEMY2A] = "enemy2a.bmp",
 	[IMAGE_ENEMY3A] = "enemy3a.bmp",
 	[IMAGE_ENEMY4A] = "enemy4a.bmp",
-	[IMAGE_PLAYER_FIRE] = "ship_fire.bmp"
+	[IMAGE_PLAYER_FIRE] = "ship_fire.bmp",
+	[IMAGE_ENEMY_DYING] = "enemy_dying.bmp"
 };
 
 struct display_data {
