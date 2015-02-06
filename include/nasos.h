@@ -15,10 +15,15 @@ struct shot_data {
 enum spaceship_animation {
 	NON_ATTACKING_1 = 0,
 	NON_ATTACKING_2 = 1,
+	SPACESHIP = 2,
 	ATTACKING
 };
 
 static SDL_Rect const enemy_sprite_rect[][10] = {
+	[SPACESHIP] = {
+		{.x = 0, .y = 0, .w = 53, .h = 65},
+		{.x = 0, .y = 0, .w = 0, .h = 0}
+	},
 	[NON_ATTACKING_1] = {
 		{.x = 0, .y = 0, .w = 45, .h = 33},
 		{.x = 51, .y = 0, .w = 46, .h = 33},
@@ -35,7 +40,7 @@ static SDL_Rect const enemy_sprite_rect[][10] = {
 };
 
 struct spaceship_data {
-	SDL_Rect rect;
+	SDL_Point center;
 	struct shot_data shot;
 	int image;
 	int frame;

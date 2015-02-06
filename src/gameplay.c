@@ -10,7 +10,10 @@ struct game_data * game_init(void)
 	game->width = 800;
 	game->height = 600;
 	game->spaceship = (struct spaceship_data) {
-		.rect = {.x = 305, .y = 530, .w = 53, .h = 65}
+		.center = {.x = 315, .y = 550},
+		.image = IMAGE_SHIP,
+		.frame = 0,
+		.animation = SPACESHIP
 	};
 	init_enemies(game);
 
@@ -36,12 +39,12 @@ void game_handle_keypress(struct game_data *game, int keycode)
 		game->done = 1;
 		break;
 	case SDLK_LEFT:
-		if (ship->rect.x > 15)
-			ship->rect.x -= 5;
+		if (ship->center.x > 30)
+			ship->center.x -= 5;
 		break;
 	case SDLK_RIGHT:
-		if (ship->rect.x + ship->rect.w < game->width - 15)
-			ship->rect.x += 5;
+		if (ship->center.x < game->width - 30)
+			ship->center.x += 5;
 		break;
 	}
 }
@@ -60,17 +63,17 @@ void game_handle_timer(struct game_data *game, int timer_id)
 			if (enemy_sprite_rect[enemy->animation][enemy->frame].w == 0)
 				enemy->frame = 0;
 
-			enemy->rect.x += game->enemy_dx;
+			enemy->center.x += game->enemy_dx;
 		}
 
 		game->enemy_minx += game->enemy_dx;
 		game->enemy_maxx += game->enemy_dx;
 
-		if (game->enemy_minx <= 5) {
+		if (game->enemy_minx <= 30) {
 			game->enemy_dx = ENEMY_DX_DEFAULT;
 		}
 
-		if (game->enemy_maxx >= game->width - 5) {
+		if (game->enemy_maxx >= game->width - 30) {
 			game->enemy_dx = -ENEMY_DX_DEFAULT;
 		}
 
@@ -88,9 +91,8 @@ static void init_enemies(struct game_data *game)
 	/* 1st row */
 	for (i = 0; i < 2; i++) {
 		game->enemies[enemy_count++] = (struct spaceship_data) {
-			.rect = {
-				.x = 225 + 195 * i, .y = 25, 
-				.w = 46, .h = 33
+			.center = {
+				.x = 225 + 195 * i, .y = 45
 			},
 			.image = IMAGE_ENEMY4A,
 			.animation = NON_ATTACKING_2,
@@ -101,9 +103,8 @@ static void init_enemies(struct game_data *game)
 	/* 2nd row */
 	for (i = 0; i < 6; i++) {
 		game->enemies[enemy_count++] = (struct spaceship_data) {
-			.rect = {
-				.x = 160 + 65 * i, .y = 80, 
-				.w = 46, .h = 33
+			.center = {
+				.x = 160 + 65 * i, .y = 100
 			},
 			.image = IMAGE_ENEMY3A,
 			.animation = NON_ATTACKING_1,
@@ -114,9 +115,8 @@ static void init_enemies(struct game_data *game)
 	/* 3rd row */
 	for (i = 0; i < 8; i++) {
 		game->enemies[enemy_count++] = (struct spaceship_data) {
-			.rect = {
-				.x = 95 + 65 * i, .y = 130, 
-				.w = 46, .h = 33
+			.center = {
+				.x = 95 + 65 * i, .y = 150
 			},
 			.image = IMAGE_ENEMY2A,
 			.animation = NON_ATTACKING_1,
@@ -128,9 +128,8 @@ static void init_enemies(struct game_data *game)
 	for (j = 0; j < 3; j++) {
 		for (i = 0; i < 10; i++) {
 			game->enemies[enemy_count++] = (struct spaceship_data) {
-				.rect = {
-					.x = 30 + 65 * i, .y = 180 + 50 * j, 
-					.w = 46, .h = 33
+				.center = {
+					.x = 30 + 65 * i, .y = 200 + 50 * j
 				},
 				.image = IMAGE_ENEMY1A,
 				.animation = NON_ATTACKING_1,
@@ -141,17 +140,17 @@ static void init_enemies(struct game_data *game)
 
 	game->enemy_count = enemy_count;
 
-	game->enemy_minx = game->enemies[0].rect.x;
-	game->enemy_maxx = game->enemies[0].rect.x;
+	game->enemy_minx = game->enemies[0].center.x;
+	game->enemy_maxx = game->enemies[0].center.x;
 
 	for (i = 0; i < game->enemy_count; i++) {
-		SDL_Rect rect = game->enemies[i].rect;
+		SDL_Point center = game->enemies[i].center;
 
-		if (rect.x < game->enemy_minx)
-			game->enemy_minx = rect.x;
+		if (center.x < game->enemy_minx)
+			game->enemy_minx = center.x;
 
-		if (rect.x + rect.w > game->enemy_maxx)
-			game->enemy_maxx = rect.x + rect.w;
+		if (center.x > game->enemy_maxx)
+			game->enemy_maxx = center.x;
 	}
 
 	game->enemy_dx = -ENEMY_DX_DEFAULT;

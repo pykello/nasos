@@ -1,6 +1,8 @@
 #include <nasos.h>
 #include <unistd.h>
 
+static void draw_spaceship(struct display_data *display,
+			   struct spaceship_data *spaceship);
 static void load_images(struct display_data *display);
 static void free_images(struct display_data *display);
 
@@ -39,24 +41,35 @@ void display_render(struct display_data *display, struct game_data *game)
 	int i = 0;
 
 	SDL_Surface *surface = SDL_GetWindowSurface(display->window);
-	SDL_Surface *spaceship_surface = display->images[IMAGE_SHIP];
-
 	int black = SDL_MapRGB(surface->format, 0, 0, 0);
-
 	SDL_FillRect(surface, NULL, black);
-	SDL_BlitSurface(spaceship_surface, NULL, surface, &game->spaceship.rect);
 
-	for (i = 0; i < game->enemy_count; i++) {
-		struct spaceship_data *enemy = &game->enemies[i];
-		SDL_Surface *enemy_surface =  display->images[enemy->image];
+	draw_spaceship(display, &game->spaceship);
 
-		SDL_BlitSurface(enemy_surface,
-				&enemy_sprite_rect[enemy->animation][enemy->frame],
-				surface,
-				&enemy->rect);
-	}
+	for (i = 0; i < game->enemy_count; i++)
+		draw_spaceship(display, &game->enemies[i]);
 
 	SDL_UpdateWindowSurface(display->window);
+}
+
+static void draw_spaceship(struct display_data *display,
+			   struct spaceship_data *spaceship)
+{
+	SDL_Surface *screen_surface = SDL_GetWindowSurface(display->window);
+
+	SDL_Surface *spaceship_surface = display->images[spaceship->image];
+	SDL_Rect spaceship_rect = enemy_sprite_rect[spaceship->animation][spaceship->frame];
+	SDL_Point center = spaceship->center;
+
+	SDL_Rect target_rect = {
+		.x = center.x - spaceship_rect.w / 2,
+		.y = center.y - spaceship_rect.h / 2,
+		.w = spaceship_rect.w,
+		.h = spaceship_rect.h
+	};
+
+	SDL_BlitSurface(spaceship_surface, &spaceship_rect,
+			screen_surface, &target_rect);
 }
 
 static void load_images(struct display_data *display)
