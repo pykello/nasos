@@ -8,6 +8,10 @@
 #define FIRES_MAX 20
 #define ENEMY_DX_DEFAULT 5
 #define ROTATION_COUNT 48
+#define STAR_COUNT 128
+#define STAR_STEPS_MAX 1024
+#define STAR_SIZE_MAX 3
+
 #define PI 3.1415
 #define EPS 1e-5
 
@@ -18,6 +22,11 @@ struct fire_data {
 	double y;
 	double speed;
 	int image;
+};
+
+struct star_data {
+	SDL_Rect rect;
+	int step;
 };
 
 enum spaceship_state {
@@ -146,6 +155,7 @@ struct display_data {
 	SDL_Window *window;
 	SDL_Surface *images[IMAGE_COUNT];
 	SDL_Surface *rotations[IMAGE_COUNT][ROTATION_COUNT];
+	struct star_data stars[STAR_COUNT];
 };
 
 enum input_source {

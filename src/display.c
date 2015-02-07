@@ -6,11 +6,14 @@ static void draw_spaceship(struct display_data *display,
 			   struct spaceship_data *spaceship);
 static void draw_fire(struct display_data *display,
 		      struct fire_data *fire);
+static void draw_star(struct display_data *display, struct star_data *star,
+		      int ticks, int height);
 static void load_images(struct display_data *display);
 static void free_images(struct display_data *display);
 static void create_rotations(struct display_data *display, int image,
 			     SDL_Rect clip_rect);
 static void free_rotations(struct display_data *display);
+static void create_stars(struct display_data *display, struct game_data *game);
 
 struct display_data * display_init(struct game_data *game)
 {
@@ -35,13 +38,15 @@ struct display_data * display_init(struct game_data *game)
 	create_rotations(display, IMAGE_ENEMY3A, enemy_sprite_rect[NON_ATTACKING_1][0]);
 	create_rotations(display, IMAGE_ENEMY4A, enemy_sprite_rect[NON_ATTACKING_2][0]);
 
+	create_stars(display, game);
+
 	return display;
 }
 
 void display_destroy(struct display_data *display)
 {
 	free_images(display);
-	free_rotations(display);	
+	free_rotations(display);
 
 	SDL_DestroyWindow(display->window);
 	SDL_Quit();
@@ -52,6 +57,7 @@ void display_destroy(struct display_data *display)
 void display_render(struct display_data *display, struct game_data *game)
 {
 	int i = 0;
+	int ticks = SDL_GetTicks();
 
 	SDL_Surface *surface = SDL_GetWindowSurface(display->window);
 	int black = SDL_MapRGB(surface->format, 0, 0, 0);
@@ -65,6 +71,9 @@ void display_render(struct display_data *display, struct game_data *game)
 
 	for (i = 0; i < FIRES_MAX; i++)
 		draw_fire(display, &game->enemy_fires[i]);
+
+	for (i = 0; i < STAR_COUNT; i++)
+		draw_star(display, &display->stars[i], ticks, game->height);
 
 	SDL_UpdateWindowSurface(display->window);
 }
@@ -125,6 +134,22 @@ static void draw_fire(struct display_data *display,
 	if (fire->active)
 		SDL_BlitSurface(fire_surface, NULL,
 				screen_surface, &target_rect);
+}
+
+static void draw_star(struct display_data *display, struct star_data *star,
+		      int ticks, int height)
+{
+	SDL_Surface *screen_surface = SDL_GetWindowSurface(display->window);
+	int white = SDL_MapRGB(screen_surface->format, 200, 200, 200);
+	SDL_Rect rect = star->rect;
+	
+	int step = (star->step + ticks) % STAR_STEPS_MAX;
+	if (step < STAR_STEPS_MAX / 2)
+		return;
+
+	rect.y = (rect.y + ticks / 20) % height;
+
+	SDL_FillRect(screen_surface, &rect, white);
 }
 
 static void load_images(struct display_data *display)
@@ -222,4 +247,20 @@ static void free_rotations(struct display_data *display)
 		for (j = 0; j < ROTATION_COUNT; j++)
 			if (display->rotations[i][j] != NULL)
 				SDL_FreeSurface(display->rotations[i][j]);
+}
+
+static void create_stars(struct display_data *display, struct game_data *game)
+{
+	int i = 0;
+	for (i = 0; i < STAR_COUNT; i++) {
+		int size = 1 + rand() % STAR_SIZE_MAX;
+		int x = rand() % game->width;
+		int y = rand() % game->height;
+		int step = rand() % STAR_STEPS_MAX;
+
+		display->stars[i] = (struct star_data) {
+			.rect = {.x = x, .y = y, .w = size, .h = size},
+			.step = step
+		};
+	}
 }
