@@ -21,7 +21,8 @@ enum spaceship_state {
 	WAITING,
 	JUMPING,
 	DYING,
-	DEAD
+	DEAD,
+	RESTORING
 };
 
 enum spaceship_animation {
@@ -70,6 +71,7 @@ static SDL_Rect const enemy_sprite_rect[][10] = {
 
 struct spaceship_data {
 	SDL_Point center;
+	SDL_Point waiting_center;
 	int image; /* IMAGE_SHIP, etc. */
 	int frame; /* which frame in image */
 	int animation; /* how to divide images into frames */

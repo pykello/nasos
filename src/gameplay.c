@@ -6,6 +6,7 @@
 static void player_fire(struct game_data *game);
 static void update_waiting_enemies(struct game_data *game);
 static void update_jumping_enemies(struct game_data *game);
+static void update_restoring_enemies(struct game_data *game);
 static void enemy_fire(struct game_data *game, SDL_Point center);
 static void update_dying_enemies(struct game_data *game);
 static void update_dying_player(struct game_data *game);
@@ -85,6 +86,7 @@ void game_handle_timer(struct game_data *game, int timer_id)
 
 	case TIMER_ENEMY_JUMP:
 		update_jumping_enemies(game);
+		update_restoring_enemies(game);
 		kill_player(game);
 		break;
 
@@ -118,6 +120,9 @@ static void player_fire(struct game_data *game)
 static void update_waiting_enemies(struct game_data *game)
 {
 	int i = 0;
+	for (i = 0; i < game->enemy_count; i++)
+		game->enemies[i].waiting_center.x += game->enemy_dx;
+
 	for (i = 0; i < game->enemy_count; i++) {
 		struct spaceship_data *enemy = &game->enemies[i];
 		if (enemy->state != WAITING)
@@ -143,7 +148,7 @@ static void update_waiting_enemies(struct game_data *game)
 		if (enemy_sprite_rect[enemy->animation][enemy->frame].w == 0)
 			enemy->frame = 0;
 
-		enemy->center.x += game->enemy_dx;
+		enemy->center = enemy->waiting_center;
 	}
 
 	game->enemy_minx += game->enemy_dx;
@@ -179,6 +184,22 @@ static void update_jumping_enemies(struct game_data *game)
 			enemy->jump_degree += enemy->jump_degree_delta;
 			enemy->jump_steps--;
 		}
+
+		if (enemy->center.y > game->height + 100)
+			enemy->state = RESTORING;
+	}
+}
+
+static void update_restoring_enemies(struct game_data *game)
+{
+	int i = 0;
+	for (i = 0; i < game->enemy_count; i++) {
+		struct spaceship_data *enemy = &game->enemies[i];
+		if (enemy->state != RESTORING)
+			continue;
+
+		enemy->center = enemy->waiting_center;
+		enemy->state = WAITING;
 	}
 }
 
@@ -378,6 +399,9 @@ static void init_enemies(struct game_data *game)
 			};
 		}
 	}
+
+	for (i = 0; i < enemy_count; i++)
+		game->enemies[i].waiting_center = game->enemies[i].center;
 
 	game->enemy_count = enemy_count;
 
