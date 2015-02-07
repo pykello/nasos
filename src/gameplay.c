@@ -189,7 +189,6 @@ static void update_jumping_enemies(struct game_data *game)
 			enemy->center.y = -100;
 			enemy->jump_x = enemy->center.x;
 			enemy->jump_y = enemy->center.y;
-			enemy->jump_speed *= 0.5;
 			enemy->state = RESTORING;
 		}
 	}
@@ -209,7 +208,7 @@ static void update_restoring_enemies(struct game_data *game)
 
 		dx = enemy->waiting_center.x - enemy->jump_x;
 		dy = enemy->waiting_center.y - enemy->jump_y;
-		dist = sqrt(dx * dx + dy + dy);
+		dist = sqrt(dx * dx + dy * dy);
 
 		if (dist < enemy->jump_speed) {
 			enemy->center = enemy->waiting_center;
