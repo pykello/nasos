@@ -78,7 +78,15 @@ static void draw_spaceship(struct display_data *display,
 	SDL_Rect screen_rect;
 
 	double rotation_delta = (2 * PI) / ROTATION_COUNT;
-	int rotation_idx = (int) ((spaceship->rotation + EPS) / rotation_delta);
+	int rotation_idx = 0;
+	double rotation = spaceship->rotation;
+
+	if (rotation < 0)
+		rotation += 2 * PI;
+	if (rotation > 2 * PI)
+		rotation -= 2 * PI;
+
+	rotation_idx = (int) ((rotation + EPS) / rotation_delta);
 
 	screen_surface = SDL_GetWindowSurface(display->window);
 
