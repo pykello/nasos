@@ -7,7 +7,7 @@
 #define ENEMIES_MAX 100
 #define FIRES_MAX 20
 #define ENEMY_DX_DEFAULT 5
-#define ROTATION_COUNT 16
+#define ROTATION_COUNT 48
 #define PI 3.1415
 #define EPS 1e-5
 
