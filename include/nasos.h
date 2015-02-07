@@ -136,7 +136,7 @@ static int const timer_duration[] = {
 	[TIMER_ENEMY_ANIMATION] = 250,
 	[TIMER_ENEMY_DYING] = 70,
 	[TIMER_ENEMY_JUMP] = 40,
-	[TIMER_FIRE] = 20
+	[TIMER_FIRE] = 40
 };
 
 static char * const image_filename[] = {

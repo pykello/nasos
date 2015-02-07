@@ -110,7 +110,7 @@ static void player_fire(struct game_data *game)
 		.center = {.x = x, .y = y},
 		.y = (double) y,
 		.dy = -1,
-		.speed = 12,
+		.speed = 24,
 		.active = 1,
 		.image = IMAGE_PLAYER_FIRE
 	};
@@ -132,7 +132,7 @@ static void update_waiting_enemies(struct game_data *game)
 			enemy->jump_degree = 1.5 * PI;
 			enemy->jump_x = enemy->center.x;
 			enemy->jump_y = enemy->center.y;
-			enemy->jump_speed = 6;
+			enemy->jump_speed = 10;
 			enemy->jump_steps = rand() % 8 + 37;
 
 			if (enemy->center.x < game->spaceship.center.x)
@@ -247,7 +247,7 @@ static void enemy_fire(struct game_data *game, SDL_Point center)
 			.center = {.x = center.x, .y = center.y + 10},
 			.y = center.y + 10,
 			.dy = 1,
-			.speed = 12,
+			.speed = 16,
 			.active = 1,
 			.image = IMAGE_ENEMY_FIRE
 		};
