@@ -7,6 +7,9 @@
 #define ENEMIES_MAX 100
 #define FIRES_MAX 20
 #define ENEMY_DX_DEFAULT 5
+#define ROTATION_COUNT 16
+#define PI 3.1415
+#define EPS 1e-5
 
 struct fire_data {
 	int active;
@@ -81,6 +84,7 @@ struct spaceship_data {
 	double jump_x;
 	double jump_y;
 	double jump_speed;
+	double rotation;
 	int jump_steps;
 };
 
@@ -141,6 +145,7 @@ static char * const image_filename[] = {
 struct display_data {
 	SDL_Window *window;
 	SDL_Surface *images[IMAGE_COUNT];
+	SDL_Surface *rotations[IMAGE_COUNT][ROTATION_COUNT];
 };
 
 enum input_source {

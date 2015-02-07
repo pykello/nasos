@@ -20,8 +20,8 @@ int main() {
 		for (timer_index = 0; timer_index < TIMER_COUNT; timer_index++)
 			timer_dispatch_events(timers[timer_index], game);
 
-		/* sleep 5ms to avoid 100% cpu */
-		usleep(5000);
+		/* sleep 10ms to avoid 100% cpu */
+		usleep(10000);
 	}
 
 	for (timer_index = 0; timer_index < TIMER_COUNT; timer_index++)

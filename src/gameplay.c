@@ -1,8 +1,6 @@
 #include <nasos.h>
 #include <stdlib.h>
 
-#define PI 3.1415
-
 static void player_fire(struct game_data *game);
 static void update_waiting_enemies(struct game_data *game);
 static void update_jumping_enemies(struct game_data *game);
@@ -26,7 +24,8 @@ struct game_data * game_init(void)
 		.center = {.x = 315, .y = 550},
 		.image = IMAGE_SHIP,
 		.frame = 0,
-		.animation = SPACESHIP
+		.animation = SPACESHIP,
+		.rotation = 0.0
 	};
 
 	game->spaceship_fire = (struct fire_data) {
@@ -130,7 +129,7 @@ static void update_waiting_enemies(struct game_data *game)
 
 		if (rand() % 800 == 0) {
 			enemy->state = JUMPING;
-			enemy->jump_degree = -PI / 2;
+			enemy->jump_degree = 1.5 * PI;
 			enemy->jump_x = enemy->center.x;
 			enemy->jump_y = enemy->center.y;
 			enemy->jump_speed = 6;
@@ -167,6 +166,9 @@ static void update_jumping_enemies(struct game_data *game)
 {
 	int i = 0;
 	for (i = 0; i < game->enemy_count; i++) {
+		double dx = 0.0;
+		double dy = 0.0;
+
 		struct spaceship_data *enemy = &game->enemies[i];
 		if (enemy->state != JUMPING)
 			continue;
@@ -174,8 +176,18 @@ static void update_jumping_enemies(struct game_data *game)
 		if (rand() % 10 == 0)
 			enemy_fire(game, enemy->center);
 
-		enemy->jump_x += enemy->jump_speed * cos(enemy->jump_degree);
-		enemy->jump_y += enemy->jump_speed * sin(enemy->jump_degree);
+		dx = cos(enemy->jump_degree);
+		dy = sin(enemy->jump_degree);
+
+		enemy->rotation = atan2(-dx, -dy);
+
+		if (enemy->rotation < 0)
+			enemy->rotation += 2 * PI;
+		if (enemy->rotation > 2 * PI)
+			enemy->rotation -= 2 * PI;
+
+		enemy->jump_x += enemy->jump_speed * dx;
+		enemy->jump_y += enemy->jump_speed * dy;
 
 		enemy->center.x = (int) enemy->jump_x;
 		enemy->center.y = (int) enemy->jump_y;
@@ -213,6 +225,7 @@ static void update_restoring_enemies(struct game_data *game)
 		if (dist < enemy->jump_speed) {
 			enemy->center = enemy->waiting_center;
 			enemy->state = WAITING;
+			enemy->rotation = 0.0;
 		}
 		else {
 			enemy->jump_x += enemy->jump_speed * dx / dist;
@@ -375,7 +388,8 @@ static void init_enemies(struct game_data *game)
 			.image = IMAGE_ENEMY4A,
 			.animation = NON_ATTACKING_2,
 			.frame = 0,
-			.state = WAITING
+			.state = WAITING,
+			.rotation = 0.0
 		};
 	}
 
@@ -388,7 +402,8 @@ static void init_enemies(struct game_data *game)
 			.image = IMAGE_ENEMY3A,
 			.animation = NON_ATTACKING_1,
 			.frame = rand() % 3,
-			.state = WAITING
+			.state = WAITING,
+			.rotation = 0.0
 		};
 	}
 
@@ -401,7 +416,8 @@ static void init_enemies(struct game_data *game)
 			.image = IMAGE_ENEMY2A,
 			.animation = NON_ATTACKING_1,
 			.frame = rand() % 3,
-			.state = WAITING
+			.state = WAITING,
+			.rotation = 0.0
 		};
 	}
 
@@ -415,7 +431,8 @@ static void init_enemies(struct game_data *game)
 				.image = IMAGE_ENEMY1A,
 				.animation = NON_ATTACKING_1,
 				.frame = rand() % 3,
-				.state = WAITING
+				.state = WAITING,
+				.rotation = 0.0
 			};
 		}
 	}
