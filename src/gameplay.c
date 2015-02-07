@@ -185,8 +185,13 @@ static void update_jumping_enemies(struct game_data *game)
 			enemy->jump_steps--;
 		}
 
-		if (enemy->center.y > game->height + 100)
+		if (enemy->center.y > game->height + 100) {
+			enemy->center.y = -100;
+			enemy->jump_x = enemy->center.x;
+			enemy->jump_y = enemy->center.y;
+			enemy->jump_speed *= 0.5;
 			enemy->state = RESTORING;
+		}
 	}
 }
 
@@ -195,11 +200,27 @@ static void update_restoring_enemies(struct game_data *game)
 	int i = 0;
 	for (i = 0; i < game->enemy_count; i++) {
 		struct spaceship_data *enemy = &game->enemies[i];
+		double dx = 0.0;
+		double dy = 0.0;
+		double dist = 0.0;
+
 		if (enemy->state != RESTORING)
 			continue;
 
-		enemy->center = enemy->waiting_center;
-		enemy->state = WAITING;
+		dx = enemy->waiting_center.x - enemy->jump_x;
+		dy = enemy->waiting_center.y - enemy->jump_y;
+		dist = sqrt(dx * dx + dy + dy);
+
+		if (dist < enemy->jump_speed) {
+			enemy->center = enemy->waiting_center;
+			enemy->state = WAITING;
+		}
+		else {
+			enemy->jump_x += enemy->jump_speed * dx / dist;
+			enemy->jump_y += enemy->jump_speed * dy / dist;
+			enemy->center.x = (int) enemy->jump_x;
+			enemy->center.y = (int) enemy->jump_y;
+		}
 	}
 }
 
