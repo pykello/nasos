@@ -5,7 +5,9 @@
 static void play_fire(struct mixer_data *mixer, int sound,
 		      struct fire_data *fire, int *fire_was_active);
 static void play_explosion(struct mixer_data *mixer, int sound,
-			   struct spaceship_data *spaceship, int *ex_state);
+			   struct spaceship_data *spaceship, int ex_state);
+static void play_jump(struct mixer_data *mixer, int sound,
+		      struct spaceship_data *spaceship, int ex_state);
 static void load_sounds(struct mixer_data *mixer);
 static void free_sounds(struct mixer_data *mixer);
 
@@ -18,7 +20,7 @@ struct mixer_data * mixer_init(void)
 			  MIX_DEFAULT_FORMAT, 2, 1024) != -1)
 		enabled = 1;
 
-	Mix_AllocateChannels(64);
+	Mix_AllocateChannels(128);
 
 	mixer = malloc(sizeof(struct mixer_data));
 	mixer->enabled = enabled;
@@ -61,11 +63,20 @@ void mixer_update(struct mixer_data *mixer, struct game_data *game)
 			  &mixer->enemy_fire_active[i]);
 
 	play_explosion(mixer, SOUND_PLAYER_EXPLOSION, &game->spaceship,
-		       &mixer->player_state);
+		       mixer->player_state);
 
 	for (i = 0; i < game->enemy_count; i++)
 		play_explosion(mixer, SOUND_ENEMY_EXPLOSION, &game->enemies[i],
-			       &mixer->enemy_state[i]);
+			       mixer->enemy_state[i]);
+
+	for (i = 0; i < game->enemy_count; i++)
+		play_jump(mixer, SOUND_ENEMY_JUMPING, &game->enemies[i],
+			  mixer->enemy_state[i]);
+
+	mixer->player_state = game->spaceship.state;
+
+	for (i = 0; i < game->enemy_count; i++)
+		mixer->enemy_state[i] = game->enemies[i].state;
 }
 
 static void play_fire(struct mixer_data *mixer, int sound,
@@ -81,15 +92,23 @@ static void play_fire(struct mixer_data *mixer, int sound,
 }
 
 static void play_explosion(struct mixer_data *mixer, int sound,
-			   struct spaceship_data *spaceship, int *ex_state)
+			   struct spaceship_data *spaceship, int ex_state)
 {
 	if (mixer->sounds[sound] == NULL)
 		return;
 
-	if (spaceship->state == DYING && *ex_state != DYING)
+	if (spaceship->state == DYING && ex_state != DYING)
 		Mix_PlayChannel(-1, mixer->sounds[sound], 0);
+}
 
-	*ex_state = spaceship->state;
+static void play_jump(struct mixer_data *mixer, int sound,
+		      struct spaceship_data *spaceship, int ex_state)
+{
+	if (mixer->sounds[sound] == NULL)
+		return;
+
+	if (spaceship->state == JUMPING && ex_state != JUMPING)
+		Mix_PlayChannel(-1, mixer->sounds[sound], 0);
 }
 
 static void load_sounds(struct mixer_data *mixer)
