@@ -130,6 +130,7 @@ enum {
 	SOUND_PLAYER_FIRE,
 	SOUND_ENEMY_FIRE,
 	SOUND_PLAYER_EXPLOSION,
+	SOUND_ENEMY_EXPLOSION,
 	SOUND_COUNT
 };
 
@@ -164,7 +165,8 @@ static char * const sound_filename[] = {
 	[SOUND_BACKGROUND] = "background.ogg",
 	[SOUND_PLAYER_FIRE] = "player_fire.ogg",
 	[SOUND_ENEMY_FIRE] = "enemy_fire.ogg",
-	[SOUND_PLAYER_EXPLOSION] = "player_explosion.ogg"
+	[SOUND_PLAYER_EXPLOSION] = "player_explosion.ogg",
+	[SOUND_ENEMY_EXPLOSION] = "enemy_explosion.ogg"
 };
 
 struct display_data {

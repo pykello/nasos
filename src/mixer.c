@@ -62,6 +62,10 @@ void mixer_update(struct mixer_data *mixer, struct game_data *game)
 
 	play_explosion(mixer, SOUND_PLAYER_EXPLOSION, &game->spaceship,
 		       &mixer->player_state);
+
+	for (i = 0; i < game->enemy_count; i++)
+		play_explosion(mixer, SOUND_ENEMY_EXPLOSION, &game->enemies[i],
+			       &mixer->enemy_state[i]);
 }
 
 static void play_fire(struct mixer_data *mixer, int sound,
