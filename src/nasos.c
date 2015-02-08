@@ -6,6 +6,7 @@ int main() {
 	struct game_data *game = game_init();
 	struct display_data *display = display_init(game);
 	struct input_data *input = input_init();
+	struct mixer_data *mixer = mixer_init();
 	struct timer_data *timers[TIMER_COUNT];
 	int timer_index = 0;
 
@@ -15,11 +16,11 @@ int main() {
 
 	while (!game_done(game)) {
 		display_render(display, game);
+		mixer_update(mixer, game);
 		input_dispatch_events(input, game);
 
 		for (timer_index = 0; timer_index < TIMER_COUNT; timer_index++)
 			timer_dispatch_events(timers[timer_index], game);
-
 		/* sleep 10ms to avoid 100% cpu */
 		usleep(10000);
 	}
@@ -27,6 +28,7 @@ int main() {
 	for (timer_index = 0; timer_index < TIMER_COUNT; timer_index++)
 		timer_destroy(timers[timer_index]);
 
+	mixer_destroy(mixer);
 	input_destroy(input);
 	display_destroy(display);
 	game_destroy(game);

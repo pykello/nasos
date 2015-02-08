@@ -2,6 +2,7 @@
 #define NASOS_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 #define PATH_MAX 4096
 #define ENEMIES_MAX 100
@@ -125,6 +126,11 @@ enum {
 };
 
 enum {
+	SOUND_BACKGROUND = 0,
+	SOUND_COUNT
+};
+
+enum {
 	TIMER_ENEMY_ANIMATION = 0,
 	TIMER_ENEMY_DYING,
 	TIMER_ENEMY_JUMP,
@@ -151,6 +157,10 @@ static char * const image_filename[] = {
 	[IMAGE_PLAYER_DYING] = "ship_dying.bmp"
 };
 
+static char * const sound_filename[] = {
+	[SOUND_BACKGROUND] = "background.ogg"
+};
+
 struct display_data {
 	SDL_Window *window;
 	SDL_Surface *images[IMAGE_COUNT];
@@ -171,6 +181,12 @@ struct timer_data {
 	int id;
 	int duration;
 	int last_tick;
+};
+
+struct mixer_data {
+	int enabled;
+	int background_started;
+	Mix_Chunk *sounds[SOUND_COUNT];
 };
 
 /* gameplay.c */
@@ -196,5 +212,10 @@ void input_dispatch_events(struct input_data *, struct game_data *);
 struct timer_data * timer_init(int, int);
 void timer_destroy(struct timer_data *);
 void timer_dispatch_events(struct timer_data *, struct game_data *);
+
+/* mixer.c */
+struct mixer_data * mixer_init(void);
+void mixer_destroy(struct mixer_data *mixer);
+void mixer_update(struct mixer_data *mixer, struct game_data *game);
 
 #endif
