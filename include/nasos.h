@@ -129,6 +129,7 @@ enum {
 	SOUND_BACKGROUND = 0,
 	SOUND_PLAYER_FIRE,
 	SOUND_ENEMY_FIRE,
+	SOUND_PLAYER_EXPLOSION,
 	SOUND_COUNT
 };
 
@@ -162,7 +163,8 @@ static char * const image_filename[] = {
 static char * const sound_filename[] = {
 	[SOUND_BACKGROUND] = "background.ogg",
 	[SOUND_PLAYER_FIRE] = "player_fire.ogg",
-	[SOUND_ENEMY_FIRE] = "enemy_fire.ogg"
+	[SOUND_ENEMY_FIRE] = "enemy_fire.ogg",
+	[SOUND_PLAYER_EXPLOSION] = "player_explosion.ogg"
 };
 
 struct display_data {
@@ -194,6 +196,9 @@ struct mixer_data {
 
 	int player_fire_active;
 	int enemy_fire_active[FIRES_MAX];
+
+	int player_state;
+	int enemy_state[ENEMIES_MAX];
 };
 
 /* gameplay.c */

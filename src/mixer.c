@@ -4,6 +4,8 @@
 
 static void play_fire(struct mixer_data *mixer, int sound,
 		      struct fire_data *fire, int *fire_was_active);
+static void play_explosion(struct mixer_data *mixer, int sound,
+			   struct spaceship_data *spaceship, int *ex_state);
 static void load_sounds(struct mixer_data *mixer);
 static void free_sounds(struct mixer_data *mixer);
 
@@ -12,14 +14,19 @@ struct mixer_data * mixer_init(void)
 	struct mixer_data *mixer = NULL;
 	int enabled = 0;
 
-	if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) != -1 )
+	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY,
+			  MIX_DEFAULT_FORMAT, 2, 1024) != -1)
 		enabled = 1;
+
+	Mix_AllocateChannels(64);
 
 	mixer = malloc(sizeof(struct mixer_data));
 	mixer->enabled = enabled;
 	mixer->background_started = 0;
 	mixer->player_fire_active = 0;
 	memset(mixer->enemy_fire_active, 0, sizeof(mixer->enemy_fire_active));
+	mixer->player_state = 0;
+	memset(mixer->enemy_state, 0, sizeof(mixer->enemy_state));
 	load_sounds(mixer);
 
 	return mixer;
@@ -52,6 +59,9 @@ void mixer_update(struct mixer_data *mixer, struct game_data *game)
 	for (i = 0; i < FIRES_MAX; i++)
 		play_fire(mixer, SOUND_ENEMY_FIRE, &game->enemy_fires[i],
 			  &mixer->enemy_fire_active[i]);
+
+	play_explosion(mixer, SOUND_PLAYER_EXPLOSION, &game->spaceship,
+		       &mixer->player_state);
 }
 
 static void play_fire(struct mixer_data *mixer, int sound,
@@ -64,6 +74,18 @@ static void play_fire(struct mixer_data *mixer, int sound,
 		Mix_PlayChannel(-1, mixer->sounds[sound], 0);
 
 	*fire_was_active = fire->active;
+}
+
+static void play_explosion(struct mixer_data *mixer, int sound,
+			   struct spaceship_data *spaceship, int *ex_state)
+{
+	if (mixer->sounds[sound] == NULL)
+		return;
+
+	if (spaceship->state == DYING && *ex_state != DYING)
+		Mix_PlayChannel(-1, mixer->sounds[sound], 0);
+
+	*ex_state = spaceship->state;
 }
 
 static void load_sounds(struct mixer_data *mixer)
