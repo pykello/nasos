@@ -16,11 +16,13 @@ int main() {
 
 	while (!game_done(game)) {
 		display_render(display, game);
-		mixer_update(mixer, game);
 		input_dispatch_events(input, game);
 
 		for (timer_index = 0; timer_index < TIMER_COUNT; timer_index++)
 			timer_dispatch_events(timers[timer_index], game);
+
+		mixer_update(mixer, game);
+
 		/* sleep 10ms to avoid 100% cpu */
 		usleep(10000);
 	}
