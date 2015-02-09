@@ -71,8 +71,10 @@ void game_handle_keypress(void *private, int keycode)
 	}
 }
 
-void game_handle_timer(struct game_data *game, int timer_id)
+void game_handle_timer(void *private, int timer_id)
 {
+	struct game_data *game = private;
+
 	switch (timer_id)
 	{
 	case TIMER_ENEMY_ANIMATION:

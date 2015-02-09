@@ -193,6 +193,8 @@ struct timer_data {
 	int id;
 	int duration;
 	int last_tick;
+	void (*timer_handle_func)(void *, int);
+	void *private;
 };
 
 struct mixer_data {
@@ -212,7 +214,7 @@ struct game_data * game_init(void);
 void game_destroy(struct game_data *);
 int game_done(struct game_data *);
 void game_handle_keypress(void *, int);
-void game_handle_timer(struct game_data *, int);
+void game_handle_timer(void *, int);
 
 /* display.c */
 struct display_data * display_init(struct game_data *);
@@ -222,14 +224,14 @@ SDL_Rect create_spaceship_rect(struct spaceship_data *ship);
 SDL_Rect create_rect(SDL_Point center, int w, int h);
 
 /* input.c */
-struct input_data * input_init(void (*)(void *, int), void *private);
+struct input_data * input_init(void (*)(void *, int), void *);
 void input_destroy(struct input_data *);
 void input_dispatch_events(struct input_data *);
 
 /* timer.c */
-struct timer_data * timer_init(int, int);
+struct timer_data * timer_init(int, int, void (*)(void *, int), void *);
 void timer_destroy(struct timer_data *);
-void timer_dispatch_events(struct timer_data *, struct game_data *);
+void timer_dispatch_events(struct timer_data *);
 
 /* mixer.c */
 struct mixer_data * mixer_init(void);

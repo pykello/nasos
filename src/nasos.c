@@ -12,14 +12,15 @@ int main() {
 
 	for (timer_index = 0; timer_index < TIMER_COUNT; timer_index++)
 		timers[timer_index] = timer_init(timer_index,
-						 timer_duration[timer_index]);
+						 timer_duration[timer_index],
+						 game_handle_timer, game);
 
 	while (!game_done(game)) {
 		display_render(display, game);
 		input_dispatch_events(input);
 
 		for (timer_index = 0; timer_index < TIMER_COUNT; timer_index++)
-			timer_dispatch_events(timers[timer_index], game);
+			timer_dispatch_events(timers[timer_index]);
 
 		mixer_update(mixer, game);
 
