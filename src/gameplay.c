@@ -48,8 +48,9 @@ int game_done(struct game_data *game)
 	return game->done;
 }
 
-void game_handle_keypress(struct game_data *game, int keycode)
+void game_handle_keypress(void *private, int keycode)
 {
+	struct game_data *game = private;
 	struct spaceship_data *ship = &game->spaceship;
 
 	switch (keycode) {

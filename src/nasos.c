@@ -5,7 +5,7 @@
 int main() {
 	struct game_data *game = game_init();
 	struct display_data *display = display_init(game);
-	struct input_data *input = input_init();
+	struct input_data *input = input_init(game_handle_keypress, game);
 	struct mixer_data *mixer = mixer_init();
 	struct timer_data *timers[TIMER_COUNT];
 	int timer_index = 0;
@@ -16,7 +16,7 @@ int main() {
 
 	while (!game_done(game)) {
 		display_render(display, game);
-		input_dispatch_events(input, game);
+		input_dispatch_events(input);
 
 		for (timer_index = 0; timer_index < TIMER_COUNT; timer_index++)
 			timer_dispatch_events(timers[timer_index], game);

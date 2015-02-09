@@ -185,6 +185,8 @@ enum input_source {
 struct input_data {
 	enum input_source source;
 	unsigned int last_arrow_report[2];
+	void (*handle_input_func)(void *, int);
+	void *private;
 };
 
 struct timer_data {
@@ -209,7 +211,7 @@ struct mixer_data {
 struct game_data * game_init(void);
 void game_destroy(struct game_data *);
 int game_done(struct game_data *);
-void game_handle_keypress(struct game_data *, int);
+void game_handle_keypress(void *, int);
 void game_handle_timer(struct game_data *, int);
 
 /* display.c */
@@ -220,9 +222,9 @@ SDL_Rect create_spaceship_rect(struct spaceship_data *ship);
 SDL_Rect create_rect(SDL_Point center, int w, int h);
 
 /* input.c */
-struct input_data * input_init(void);
+struct input_data * input_init(void (*)(void *, int), void *private);
 void input_destroy(struct input_data *);
-void input_dispatch_events(struct input_data *, struct game_data *);
+void input_dispatch_events(struct input_data *);
 
 /* timer.c */
 struct timer_data * timer_init(int, int);
