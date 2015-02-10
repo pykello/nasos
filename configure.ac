@@ -27,7 +27,8 @@ AC_CHECK_HEADER_STDBOOL
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([getcwd memset sqrt])
+AC_CHECK_FUNCS([getcwd memset sqrt], [],
+	       [AC_MSG_ERROR([some required functions were not found])])
 
 AC_CONFIG_FILES([Makefile src/Makefile data/Makefile])
 AC_OUTPUT
