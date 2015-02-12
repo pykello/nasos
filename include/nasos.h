@@ -103,6 +103,7 @@ struct game_data {
 	struct spaceship_data enemies[ENEMIES_MAX];
 	struct fire_data spaceship_fire;
 	struct fire_data enemy_fires[FIRES_MAX];
+	int lifes;
 	int enemy_minx;
 	int enemy_maxx;
 	int enemy_dx;

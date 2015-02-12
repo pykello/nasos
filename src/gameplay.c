@@ -1,7 +1,8 @@
 #include <nasos.h>
 #include <stdlib.h>
 
-static void game_reset(struct game_data *game);
+static void reset_game(struct game_data *game);
+static void reset_player(struct spaceship_data *player);
 static void player_fire(struct game_data *game);
 static void update_waiting_enemies(struct game_data *game);
 static void update_jumping_enemies(struct game_data *game);
@@ -18,7 +19,7 @@ static void init_enemies(struct game_data *game);
 struct game_data * game_init(void)
 {
 	struct game_data *game = malloc(sizeof(struct game_data));
-	game_reset(game);
+	reset_game(game);
 
 	return game;
 }
@@ -43,7 +44,7 @@ void game_handle_keypress(void *private, int keycode)
 		game->done = 1;
 		break;
 	case 'r':
-		game_reset(game);
+		reset_game(game);
 		break;
 	case ' ':
 		player_fire(game);
@@ -87,25 +88,30 @@ void game_handle_timer(void *private, int timer_id)
 	}
 }
 
-static void game_reset(struct game_data *game)
+static void reset_game(struct game_data *game)
 {
+	game->lifes = 3;
 	game->done = 0;
 	game->width = 800;
 	game->height = 600;
-	game->spaceship = (struct spaceship_data) {
+	game->spaceship_fire = (struct fire_data) {
+		.active = 0
+	};
+
+	reset_player(&game->spaceship);
+	init_enemies(game);
+	memset(game->enemy_fires, 0, sizeof(game->enemy_fires));
+}
+
+static void reset_player(struct spaceship_data *player)
+{
+	(*player) = (struct spaceship_data) {
 		.center = {.x = 315, .y = 550},
 		.image = IMAGE_SHIP,
 		.frame = 0,
 		.animation = SPACESHIP,
 		.rotation = 0.0
 	};
-
-	game->spaceship_fire = (struct fire_data) {
-		.active = 0
-	};
-
-	init_enemies(game);
-	memset(game->enemy_fires, 0, sizeof(game->enemy_fires));
 }
 
 static void player_fire(struct game_data *game)
@@ -287,8 +293,14 @@ static void update_dying_player(struct game_data *game)
 		return;
 
 	player->frame++;
-	if (enemy_sprite_rect[player->animation][player->frame].w == 0)
+	if (enemy_sprite_rect[player->animation][player->frame].w == 0) {
 		player->state = DEAD;
+		game->lifes -= 1;
+		if (game->lifes == 0)
+			reset_game(game);
+		else
+			reset_player(player);
+	}
 }
 
 static void update_fires(struct game_data *game)
