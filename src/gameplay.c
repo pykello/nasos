@@ -1,6 +1,7 @@
 #include <nasos.h>
 #include <stdlib.h>
 
+static void game_reset(struct game_data *game);
 static void player_fire(struct game_data *game);
 static void update_waiting_enemies(struct game_data *game);
 static void update_jumping_enemies(struct game_data *game);
@@ -17,23 +18,7 @@ static void init_enemies(struct game_data *game);
 struct game_data * game_init(void)
 {
 	struct game_data *game = malloc(sizeof(struct game_data));
-	game->done = 0;
-	game->width = 800;
-	game->height = 600;
-	game->spaceship = (struct spaceship_data) {
-		.center = {.x = 315, .y = 550},
-		.image = IMAGE_SHIP,
-		.frame = 0,
-		.animation = SPACESHIP,
-		.rotation = 0.0
-	};
-
-	game->spaceship_fire = (struct fire_data) {
-		.active = 0
-	};
-
-	init_enemies(game);
-	memset(game->enemy_fires, 0, sizeof(game->enemy_fires));
+	game_reset(game);
 
 	return game;
 }
@@ -56,6 +41,9 @@ void game_handle_keypress(void *private, int keycode)
 	switch (keycode) {
 	case 'q':
 		game->done = 1;
+		break;
+	case 'r':
+		game_reset(game);
 		break;
 	case ' ':
 		player_fire(game);
@@ -97,6 +85,27 @@ void game_handle_timer(void *private, int timer_id)
 		kill_enemies(game);
 		break;
 	}
+}
+
+static void game_reset(struct game_data *game)
+{
+	game->done = 0;
+	game->width = 800;
+	game->height = 600;
+	game->spaceship = (struct spaceship_data) {
+		.center = {.x = 315, .y = 550},
+		.image = IMAGE_SHIP,
+		.frame = 0,
+		.animation = SPACESHIP,
+		.rotation = 0.0
+	};
+
+	game->spaceship_fire = (struct fire_data) {
+		.active = 0
+	};
+
+	init_enemies(game);
+	memset(game->enemy_fires, 0, sizeof(game->enemy_fires));
 }
 
 static void player_fire(struct game_data *game)
