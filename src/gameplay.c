@@ -109,7 +109,7 @@ static void reset_player(struct spaceship_data *player)
 		.center = {.x = 315, .y = 550},
 		.image = IMAGE_SHIP,
 		.frame = 0,
-		.animation = SPACESHIP,
+		.animation = ANIM_SPACESHIP,
 		.rotation = 0.0
 	};
 }
@@ -142,11 +142,11 @@ static void update_waiting_enemies(struct game_data *game)
 
 	for (i = 0; i < game->enemy_count; i++) {
 		struct spaceship_data *enemy = &game->enemies[i];
-		if (enemy->state != WAITING)
+		if (enemy->state != STATE_WAITING)
 			continue;
 
 		if (rand() % 800 == 0) {
-			enemy->state = JUMPING;
+			enemy->state = STATE_JUMPING;
 			enemy->jump_degree = 1.5 * PI;
 			enemy->jump_x = enemy->center.x;
 			enemy->jump_y = enemy->center.y;
@@ -188,7 +188,7 @@ static void update_jumping_enemies(struct game_data *game)
 		double dy = 0.0;
 
 		struct spaceship_data *enemy = &game->enemies[i];
-		if (enemy->state != JUMPING)
+		if (enemy->state != STATE_JUMPING)
 			continue;
 
 		if (rand() % 10 == 0)
@@ -214,7 +214,7 @@ static void update_jumping_enemies(struct game_data *game)
 			enemy->center.y = -100;
 			enemy->jump_x = enemy->center.x;
 			enemy->jump_y = enemy->center.y;
-			enemy->state = RESTORING;
+			enemy->state = STATE_RESTORING;
 		}
 	}
 }
@@ -228,7 +228,7 @@ static void update_restoring_enemies(struct game_data *game)
 		double dy = 0.0;
 		double dist = 0.0;
 
-		if (enemy->state != RESTORING)
+		if (enemy->state != STATE_RESTORING)
 			continue;
 
 		if (fabs(enemy->jump_degree - 1.5 * PI) > EPS)
@@ -240,7 +240,7 @@ static void update_restoring_enemies(struct game_data *game)
 
 		if (dist < enemy->jump_speed) {
 			enemy->center = enemy->waiting_center;
-			enemy->state = WAITING;
+			enemy->state = STATE_WAITING;
 			enemy->rotation = 0.0;
 		}
 		else {
@@ -277,24 +277,24 @@ static void update_dying_enemies(struct game_data *game)
 	int i = 0;
 	for (i = 0; i < game->enemy_count; i++) {
 		struct spaceship_data *enemy = &game->enemies[i];
-		if (enemy->state != DYING)
+		if (enemy->state != STATE_DYING)
 			continue;
 
 		enemy->frame++;
 		if (enemy_sprite_rect[enemy->animation][enemy->frame].w == 0)
-			enemy->state = DEAD;
+			enemy->state = STATE_DEAD;
 	}
 }
 
 static void update_dying_player(struct game_data *game)
 {
 	struct spaceship_data *player = &game->spaceship;
-	if (player->state != DYING)
+	if (player->state != STATE_DYING)
 		return;
 
 	player->frame++;
 	if (enemy_sprite_rect[player->animation][player->frame].w == 0) {
-		player->state = DEAD;
+		player->state = STATE_DEAD;
 		game->lifes -= 1;
 		if (game->lifes == 0)
 			reset_game(game);
@@ -313,7 +313,7 @@ static void update_fires(struct game_data *game)
 	for (i = 0; i < FIRES_MAX; i++)
 		update_fire(&game->enemy_fires[i], game->height);
 
-	if (player->state != DEAD && player->state != DYING) {
+	if (player->state != STATE_DEAD && player->state != STATE_DYING) {
 		if (game->spaceship_fire.active)
 			player->frame = 1;
 		else
@@ -345,14 +345,14 @@ static void kill_enemies(struct game_data *game)
 		SDL_Rect enemy_rect = create_spaceship_rect(enemy);
 		SDL_Rect fire_rect = create_rect(game->spaceship_fire.center, 4, 13);
 
-		if (enemy->state == DEAD || enemy->state == DYING)
+		if (enemy->state == STATE_DEAD || enemy->state == STATE_DYING)
 			continue;
 
 		if (SDL_HasIntersection(&enemy_rect, &fire_rect)) {
-			enemy->state = DYING;
+			enemy->state = STATE_DYING;
 			enemy->frame = 0;
 			enemy->image = IMAGE_ENEMY_DYING;
-			enemy->animation = ENEMY_DYING;
+			enemy->animation = ANIM_ENEMY_DYING;
 			game->spaceship_fire.active = 0;
 		}
 	}
@@ -365,14 +365,14 @@ static void kill_player(struct game_data *game)
 	struct spaceship_data *player = &game->spaceship;
 	SDL_Rect player_rect = create_spaceship_rect(player);
 
-	if (player->state == DEAD || player->state == DYING)
+	if (player->state == STATE_DEAD || player->state == STATE_DYING)
 		return;
 
 	for (i = 0; i < game->enemy_count && !should_die; i++) {
 		SDL_Rect enemy_rect = create_spaceship_rect(&game->enemies[i]);
 
-		if (game->enemies[i].state == DEAD ||
-		    game->enemies[i].state == DYING)
+		if (game->enemies[i].state == STATE_DEAD ||
+		    game->enemies[i].state == STATE_DYING)
 			continue;
 
 		if (SDL_HasIntersection(&enemy_rect, &player_rect))
@@ -390,10 +390,10 @@ static void kill_player(struct game_data *game)
 	}
 
 	if (should_die) {
-		player->state = DYING;
+		player->state = STATE_DYING;
 		player->frame = 0;
 		player->image = IMAGE_PLAYER_DYING;
-		player->animation = PLAYER_DYING;
+		player->animation = ANIM_PLAYER_DYING;
 	}
 }
 
@@ -410,9 +410,9 @@ static void init_enemies(struct game_data *game)
 				.x = 162 + 132 * i, .y = 55
 			},
 			.image = IMAGE_ENEMY4A,
-			.animation = NON_ATTACKING_2,
+			.animation = ANIM_NON_ATTACKING_2,
 			.frame = 0,
-			.state = WAITING,
+			.state = STATE_WAITING,
 			.rotation = 0.0
 		};
 	}
@@ -424,9 +424,9 @@ static void init_enemies(struct game_data *game)
 				.x = 118 + 44 * i, .y = 90
 			},
 			.image = IMAGE_ENEMY3A,
-			.animation = NON_ATTACKING_1,
+			.animation = ANIM_NON_ATTACKING_1,
 			.frame = rand() % 3,
-			.state = WAITING,
+			.state = STATE_WAITING,
 			.rotation = 0.0
 		};
 	}
@@ -438,9 +438,9 @@ static void init_enemies(struct game_data *game)
 				.x = 74 + 44 * i, .y = 125
 			},
 			.image = IMAGE_ENEMY2A,
-			.animation = NON_ATTACKING_1,
+			.animation = ANIM_NON_ATTACKING_1,
 			.frame = rand() % 3,
-			.state = WAITING,
+			.state = STATE_WAITING,
 			.rotation = 0.0
 		};
 	}
@@ -453,9 +453,9 @@ static void init_enemies(struct game_data *game)
 					.x = 30 + 44 * i, .y = 160 + 35 * j
 				},
 				.image = IMAGE_ENEMY1A,
-				.animation = NON_ATTACKING_1,
+				.animation = ANIM_NON_ATTACKING_1,
 				.frame = rand() % 3,
-				.state = WAITING,
+				.state = STATE_WAITING,
 				.rotation = 0.0
 			};
 		}

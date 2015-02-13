@@ -97,7 +97,7 @@ static void play_explosion(struct mixer_data *mixer, int sound,
 	if (mixer->sounds[sound] == NULL)
 		return;
 
-	if (spaceship->state == DYING && ex_state != DYING)
+	if (spaceship->state == STATE_DYING && ex_state != STATE_DYING)
 		Mix_PlayChannel(-1, mixer->sounds[sound], 0);
 }
 
@@ -107,7 +107,7 @@ static void play_jump(struct mixer_data *mixer, int sound,
 	if (mixer->sounds[sound] == NULL)
 		return;
 
-	if (spaceship->state == JUMPING && ex_state != JUMPING)
+	if (spaceship->state == STATE_JUMPING && ex_state != STATE_JUMPING)
 		Mix_PlayChannel(-1, mixer->sounds[sound], 0);
 }
 

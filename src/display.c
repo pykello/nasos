@@ -33,10 +33,10 @@ struct display_data * display_init(struct game_data *game)
 	load_images(display);
 
 	memset(display->rotations, 0, sizeof(display->rotations));
-	create_rotations(display, IMAGE_ENEMY1A, enemy_sprite_rect[NON_ATTACKING_1][0]);
-	create_rotations(display, IMAGE_ENEMY2A, enemy_sprite_rect[NON_ATTACKING_1][0]);
-	create_rotations(display, IMAGE_ENEMY3A, enemy_sprite_rect[NON_ATTACKING_1][0]);
-	create_rotations(display, IMAGE_ENEMY4A, enemy_sprite_rect[NON_ATTACKING_2][0]);
+	create_rotations(display, IMAGE_ENEMY1A, enemy_sprite_rect[ANIM_NON_ATTACKING_1][0]);
+	create_rotations(display, IMAGE_ENEMY2A, enemy_sprite_rect[ANIM_NON_ATTACKING_1][0]);
+	create_rotations(display, IMAGE_ENEMY3A, enemy_sprite_rect[ANIM_NON_ATTACKING_1][0]);
+	create_rotations(display, IMAGE_ENEMY4A, enemy_sprite_rect[ANIM_NON_ATTACKING_2][0]);
 
 	create_stars(display, game);
 
@@ -117,7 +117,7 @@ static void draw_spaceship(struct display_data *display,
 		screen_rect = create_spaceship_rect(spaceship);
 	}
 
-	if (spaceship->state != DEAD)
+	if (spaceship->state != STATE_DEAD)
 		SDL_BlitSurface(image_surface, &image_rect,
 				screen_surface, &screen_rect);
 }

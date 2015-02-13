@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 
+#include <nasos_data.h>
+
 #define PATH_MAX 4096
 #define ENEMIES_MAX 100
 #define FIRES_MAX 20
@@ -16,6 +18,43 @@
 #define PI 3.1415
 #define EPS 1e-5
 
+
+/* Game structures, enums, ... */
+
+enum spaceship_state {
+	STATE_WAITING,
+	STATE_JUMPING,
+	STATE_DYING,
+	STATE_DEAD,
+	STATE_RESTORING
+};
+
+/* player or enemy spaceship */
+struct spaceship_data {
+	SDL_Point center; /* current position of spaceship */
+
+	/*
+	 * Enemy spaceships can jump. they should know where they should go back
+	 * when their attack is finished. waiting_center represents that place.
+	 */
+	SDL_Point waiting_center;
+	
+	enum spaceship_state state; /* STATE_WAITING, etc. */
+	enum image_id image; /* IMAGE_SHIP, etc. */
+	int frame; /* which frame in image */
+	enum animation_id animation; /* how to divide images into frames */
+	
+	/* jump variables for enemies */
+	double jump_degree;  /* current orientation */
+	double jump_degree_delta; /* how much should degree change on each update */
+	double jump_x;
+	double jump_y;
+	double jump_speed;
+	double rotation;
+	int jump_steps;
+};
+
+/* player or enemy fire */
 struct fire_data {
 	int active;
 	SDL_Point center;
@@ -25,79 +64,7 @@ struct fire_data {
 	int image;
 };
 
-struct star_data {
-	SDL_Rect rect;
-	int step;
-};
-
-enum spaceship_state {
-	WAITING,
-	JUMPING,
-	DYING,
-	DEAD,
-	RESTORING
-};
-
-enum spaceship_animation {
-	NON_ATTACKING_1 = 0,
-	NON_ATTACKING_2 = 1,
-	SPACESHIP = 2,
-	ENEMY_DYING = 3,
-	PLAYER_DYING = 4,
-	ATTACKING
-};
-
-static SDL_Rect const enemy_sprite_rect[][10] = {
-	[SPACESHIP] = {
-		{.x = 0, .y = 0, .w = 36, .h = 56},
-		{.x = 40, .y = 0, .w = 36, .h = 56},
-		{.x = 0, .y = 0, .w = 0, .h = 0}
-	},
-	[NON_ATTACKING_1] = {
-		{.x = 0, .y = 0, .w = 30, .h = 22},
-		{.x = 34, .y = 0, .w = 30, .h = 22},
-		{.x = 70, .y = 0, .w = 30, .h = 22},
-		{.x = 0, .y = 0, .w = 0, .h = 0}
-	},
-	[NON_ATTACKING_2] = {
-		{.x = 0, .y = 0, .w = 29, .h = 32},
-		{.x = 0, .y = 0, .w = 0, .h = 0}
-	},
-	[ATTACKING] = {
-		{.x = 0, .y = 0, .w = 0, .h = 0}
-	},
-	[ENEMY_DYING] = {
-		{.x = 0, .y = 0, .w = 42, .h = 44},
-		{.x = 50, .y = 0, .w = 24, .h = 44},
-		{.x = 80, .y = 0, .w = 35, .h = 44},
-		{.x = 120, .y = 0, .w = 42, .h = 44},
-		{.x = 0, .y = 0, .w = 0, .h = 0}
-	},
-	[PLAYER_DYING] = {
-		{.x = 0, .y = 0, .w = 80, .h = 85},
-		{.x = 85, .y = 0, .w = 80, .h = 85},
-		{.x = 170, .y = 0, .w = 85, .h = 85},
-		{.x = 258, .y = 0, .w = 80, .h = 85},
-		{.x = 0, .y = 0, .w = 0, .h = 0}
-	}
-};
-
-struct spaceship_data {
-	SDL_Point center;
-	SDL_Point waiting_center;
-	int image; /* IMAGE_SHIP, etc. */
-	int frame; /* which frame in image */
-	int animation; /* how to divide images into frames */
-	int state;
-	double jump_degree;
-	double jump_degree_delta;
-	double jump_x;
-	double jump_y;
-	double jump_speed;
-	double rotation;
-	int jump_steps;
-};
-
+/* game state */
 struct game_data {
 	struct spaceship_data spaceship;
 	struct spaceship_data enemies[ENEMIES_MAX];
@@ -113,63 +80,12 @@ struct game_data {
 	int height;
 };
 
-enum {
-	IMAGE_SHIP = 0,
-	IMAGE_ENEMY1A,
-	IMAGE_ENEMY2A,
-	IMAGE_ENEMY3A,
-	IMAGE_ENEMY4A,
-	IMAGE_PLAYER_FIRE,
-	IMAGE_ENEMY_FIRE,
-	IMAGE_ENEMY_DYING,
-	IMAGE_PLAYER_DYING,
-	IMAGE_COUNT
-};
 
-enum {
-	SOUND_BACKGROUND = 0,
-	SOUND_PLAYER_FIRE,
-	SOUND_ENEMY_FIRE,
-	SOUND_PLAYER_EXPLOSION,
-	SOUND_ENEMY_EXPLOSION,
-	SOUND_ENEMY_JUMPING,
-	SOUND_COUNT
-};
+/* Display structures */
 
-enum {
-	TIMER_ENEMY_ANIMATION = 0,
-	TIMER_ENEMY_DYING,
-	TIMER_ENEMY_JUMP,
-	TIMER_FIRE,
-	TIMER_COUNT
-};
-
-static int const timer_duration[] = {
-	[TIMER_ENEMY_ANIMATION] = 250,
-	[TIMER_ENEMY_DYING] = 70,
-	[TIMER_ENEMY_JUMP] = 40,
-	[TIMER_FIRE] = 40
-};
-
-static char * const image_filename[] = {
-	[IMAGE_SHIP] = "ship.bmp",
-	[IMAGE_ENEMY1A] = "enemy1a.bmp",
-	[IMAGE_ENEMY2A] = "enemy2a.bmp",
-	[IMAGE_ENEMY3A] = "enemy3a.bmp",
-	[IMAGE_ENEMY4A] = "enemy4a.bmp",
-	[IMAGE_PLAYER_FIRE] = "ship_fire.bmp",
-	[IMAGE_ENEMY_FIRE] = "enemy_fire.bmp",
-	[IMAGE_ENEMY_DYING] = "enemy_dying.bmp",
-	[IMAGE_PLAYER_DYING] = "ship_dying.bmp"
-};
-
-static char * const sound_filename[] = {
-	[SOUND_BACKGROUND] = "background.ogg",
-	[SOUND_PLAYER_FIRE] = "player_fire.ogg",
-	[SOUND_ENEMY_FIRE] = "enemy_fire.ogg",
-	[SOUND_PLAYER_EXPLOSION] = "player_explosion.ogg",
-	[SOUND_ENEMY_EXPLOSION] = "enemy_explosion.ogg",
-	[SOUND_ENEMY_JUMPING] = "enemy_jumping.ogg"
+struct star_data {
+	SDL_Rect rect;
+	int step;
 };
 
 struct display_data {
@@ -178,6 +94,9 @@ struct display_data {
 	SDL_Surface *rotations[IMAGE_COUNT][ROTATION_COUNT];
 	struct star_data stars[STAR_COUNT];
 };
+
+
+/* Input structures */
 
 enum input_source {
 	KEYBOARD
@@ -190,6 +109,9 @@ struct input_data {
 	void *private;
 };
 
+
+/* Timer structures */
+
 struct timer_data {
 	int id;
 	int duration;
@@ -197,6 +119,9 @@ struct timer_data {
 	void (*timer_handle_func)(void *, int);
 	void *private;
 };
+
+
+/* Mixer structures */
 
 struct mixer_data {
 	int enabled;
@@ -209,6 +134,7 @@ struct mixer_data {
 	int player_state;
 	int enemy_state[ENEMIES_MAX];
 };
+
 
 /* gameplay.c */
 struct game_data * game_init(void);
