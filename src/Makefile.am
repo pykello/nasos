@@ -5,5 +5,7 @@ AM_CFLAGS = -I$(top_srcdir)/include \
 
 bin_PROGRAMS = nasos
 
-nasos_SOURCES = nasos.c gameplay.c display.c input.c timer.c mixer.c
+nasos_SOURCES = nasos.c gameplay.c gameplay_init.c gameplay_enemies.c\
+		gameplay_player.c gameplay_fire.c display.c input.c timer.c\
+		mixer.c
 nasos_LDCONFIG = -lSDL2

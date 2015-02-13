@@ -143,6 +143,27 @@ int game_done(struct game_data *);
 void game_handle_keypress(void *, int);
 void game_handle_timer(void *, int);
 
+/* gameplay_init.c */
+void reset_game(struct game_data *game);
+void reset_player(struct spaceship_data *player);
+void reset_enemies(struct game_data *game);
+
+/* gameplay_enemies.c */
+void update_waiting_enemies(struct game_data *game);
+void update_jumping_enemies(struct game_data *game);
+void update_restoring_enemies(struct game_data *game);
+void update_dying_enemies(struct game_data *game);
+void enemy_fire(struct game_data *game, SDL_Point center);
+void kill_enemies(struct game_data *game);
+
+/* gameplay_player.c */
+void update_dying_player(struct game_data *game);
+void player_fire(struct game_data *game);
+void kill_player(struct game_data *game);
+
+/* gameplay_fire.c */
+void update_fires(struct game_data *game);
+
 /* display.c */
 struct display_data * display_init(struct game_data *);
 void display_destroy(struct display_data *);
