@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <SDL2/SDL2_rotozoom.h>
 
+static void draw_lifes(struct display_data *display, int lifes);
 static void draw_spaceship(struct display_data *display,
 			   struct spaceship_data *spaceship);
 static void draw_fire(struct display_data *display,
@@ -64,6 +65,7 @@ void display_render(struct display_data *display, struct game_data *game)
 	int black = SDL_MapRGB(surface->format, 0, 0, 0);
 	SDL_FillRect(surface, NULL, black);
 
+	draw_lifes(display, game->lifes);
 	draw_spaceship(display, &game->player);
 	draw_fire(display, &game->player_fire);
 
@@ -77,6 +79,25 @@ void display_render(struct display_data *display, struct game_data *game)
 		draw_star(display, &display->stars[i], ticks, game->height);
 
 	SDL_UpdateWindowSurface(display->window);
+}
+
+static void draw_lifes(struct display_data *display, int lifes)
+{
+	int i = 0;
+
+	SDL_Surface *screen_surface = SDL_GetWindowSurface(display->window);
+	SDL_Surface *life_surface = display->images[IMAGE_LIFE];
+
+	for (i = 0; i < lifes; i++) {
+		SDL_Rect rect = {
+			.x = LIFE_LEFT + i * (LIFE_DIST + life_surface->w),
+			.y = screen_surface->h - LIFE_BOTTOM - life_surface->h,
+			.w = life_surface->w,
+			.h = life_surface->h
+		};
+
+		SDL_BlitSurface(life_surface, NULL, screen_surface, &rect);
+	}
 }
 
 static void draw_spaceship(struct display_data *display,

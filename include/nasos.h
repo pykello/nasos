@@ -47,6 +47,9 @@
 #define ENEMY_ROW_DIST 35
 #define ENEMY_X_MIN 40
 #define ENEMY_COL_DIST 44
+#define LIFE_LEFT 80
+#define LIFE_DIST 5
+#define LIFE_BOTTOM 20
 
 
 /* Game structures, enums, ... */
