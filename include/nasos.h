@@ -198,9 +198,11 @@ void kill_player(struct game_data *game);
 void update_fires(struct game_data *game);
 
 /* display.c */
-struct display_data * display_init(struct game_data *);
+struct display_data * display_init(int w, int h);
 void display_destroy(struct display_data *);
-void display_render(struct display_data *, struct game_data *);
+
+/* render_game.c */
+void display_render_game(struct display_data *, struct game_data *);
 SDL_Rect create_rect(SDL_Point center, int w, int h);
 
 /* input.c */

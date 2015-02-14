@@ -2,9 +2,22 @@
 #include <unistd.h>
 #include <nasos.h>
 
-int main() {
+static void run_game_loop(struct display_data *display);
+
+int main()
+{
+	struct display_data *display = display_init(GAME_W, GAME_H);
+
+	run_game_loop(display);
+
+	display_destroy(display);
+
+	return 0;
+}
+
+static void run_game_loop(struct display_data *display)
+{
 	struct game_data *game = game_init();
-	struct display_data *display = display_init(game);
 	struct input_data *input = input_init(game_handle_keypress, game);
 	struct mixer_data *mixer = mixer_init();
 	struct timer_data *timers[TIMER_COUNT];
@@ -16,7 +29,7 @@ int main() {
 						 game_handle_timer, game);
 
 	while (!game_done(game)) {
-		display_render(display, game);
+		display_render_game(display, game);
 		input_dispatch_events(input);
 
 		for (timer_index = 0; timer_index < TIMER_COUNT; timer_index++)
@@ -33,8 +46,5 @@ int main() {
 
 	mixer_destroy(mixer);
 	input_destroy(input);
-	display_destroy(display);
 	game_destroy(game);
-
-	return 0;
 }
