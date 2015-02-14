@@ -7,11 +7,11 @@ void reset_game(struct game_data *game)
 	game->done = 0;
 	game->width = GAME_W;
 	game->height = GAME_H;
-	game->spaceship_fire = (struct fire_data) {
+	game->player_fire = (struct fire_data) {
 		.active = 0
 	};
 
-	reset_player(&game->spaceship);
+	reset_player(&game->player);
 	reset_enemies(game);
 	memset(game->enemy_fires, 0, sizeof(game->enemy_fires));
 }

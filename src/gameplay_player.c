@@ -3,7 +3,7 @@
 
 void update_dying_player(struct game_data *game)
 {
-	struct spaceship_data *player = &game->spaceship;
+	struct spaceship_data *player = &game->player;
 	if (player->state != STATE_DYING)
 		return;
 
@@ -20,15 +20,15 @@ void update_dying_player(struct game_data *game)
 
 void player_fire(struct game_data *game)
 {
-	SDL_Point player_center = game->spaceship.center;
+	SDL_Point player_center = game->player.center;
 	int x = player_center.x;
 	int y = player_center.y - PLAYER_H / 2;
 
-	if (game->spaceship_fire.active)
+	if (game->player_fire.active)
 		return;
 
-	game->spaceship.frame = 1;
-	game->spaceship_fire = (struct fire_data) {
+	game->player.frame = 1;
+	game->player_fire = (struct fire_data) {
 		.center = {.x = x, .y = y},
 		.y = (double) y,
 		.dy = -1,
@@ -42,7 +42,7 @@ void kill_player(struct game_data *game)
 {
 	int i = 0;
 	int should_die = 0;
-	struct spaceship_data *player = &game->spaceship;
+	struct spaceship_data *player = &game->player;
 	SDL_Rect player_rect = create_rect(player->center, PLAYER_W, PLAYER_H);
 
 	if (player->state == STATE_DEAD || player->state == STATE_DYING)

@@ -96,9 +96,9 @@ struct fire_data {
 
 /* game state */
 struct game_data {
-	struct spaceship_data spaceship;
+	struct spaceship_data player;
 	struct spaceship_data enemies[ENEMIES_MAX];
-	struct fire_data spaceship_fire;
+	struct fire_data player_fire;
 	struct fire_data enemy_fires[FIRES_MAX];
 	int lifes;
 	int enemy_minx;

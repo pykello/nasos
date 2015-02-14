@@ -55,14 +55,14 @@ void mixer_update(struct mixer_data *mixer, struct game_data *game)
 		mixer->background_started = 1;
 	}
 
-	play_fire(mixer, SOUND_PLAYER_FIRE, &game->spaceship_fire,
+	play_fire(mixer, SOUND_PLAYER_FIRE, &game->player_fire,
 		  &mixer->player_fire_active);
 
 	for (i = 0; i < FIRES_MAX; i++)
 		play_fire(mixer, SOUND_ENEMY_FIRE, &game->enemy_fires[i],
 			  &mixer->enemy_fire_active[i]);
 
-	play_explosion(mixer, SOUND_PLAYER_EXPLOSION, &game->spaceship,
+	play_explosion(mixer, SOUND_PLAYER_EXPLOSION, &game->player,
 		       mixer->player_state);
 
 	for (i = 0; i < game->enemy_count; i++)
@@ -73,7 +73,7 @@ void mixer_update(struct mixer_data *mixer, struct game_data *game)
 		play_jump(mixer, SOUND_ENEMY_JUMPING, &game->enemies[i],
 			  mixer->enemy_state[i]);
 
-	mixer->player_state = game->spaceship.state;
+	mixer->player_state = game->player.state;
 
 	for (i = 0; i < game->enemy_count; i++)
 		mixer->enemy_state[i] = game->enemies[i].state;

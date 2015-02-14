@@ -22,7 +22,7 @@ int game_done(struct game_data *game)
 void game_handle_keypress(void *private, int keycode)
 {
 	struct game_data *game = private;
-	struct spaceship_data *ship = &game->spaceship;
+	struct spaceship_data *player = &game->player;
 
 	switch (keycode) {
 	case 'q':
@@ -35,12 +35,12 @@ void game_handle_keypress(void *private, int keycode)
 		player_fire(game);
 		break;
 	case SDLK_LEFT:
-		if (ship->center.x > 30)
-			ship->center.x -= PLAYER_SPEED;
+		if (player->center.x > 30)
+			player->center.x -= PLAYER_SPEED;
 		break;
 	case SDLK_RIGHT:
-		if (ship->center.x < game->width - 30)
-			ship->center.x += PLAYER_SPEED;
+		if (player->center.x < game->width - 30)
+			player->center.x += PLAYER_SPEED;
 		break;
 	}
 }

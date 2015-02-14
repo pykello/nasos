@@ -64,8 +64,8 @@ void display_render(struct display_data *display, struct game_data *game)
 	int black = SDL_MapRGB(surface->format, 0, 0, 0);
 	SDL_FillRect(surface, NULL, black);
 
-	draw_spaceship(display, &game->spaceship);
-	draw_fire(display, &game->spaceship_fire);
+	draw_spaceship(display, &game->player);
+	draw_fire(display, &game->player_fire);
 
 	for (i = 0; i < game->enemy_count; i++)
 		draw_spaceship(display, &game->enemies[i]);
