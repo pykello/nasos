@@ -17,13 +17,13 @@ void update_waiting_enemies(struct game_data *game)
 			enemy->jump_degree = 1.5 * PI;
 			enemy->jump_x = enemy->center.x;
 			enemy->jump_y = enemy->center.y;
-			enemy->jump_speed = 10;
+			enemy->jump_speed = JUMPING_ENEMY_SPEED;
 			enemy->jump_steps = rand() % 8 + 37;
 
 			if (enemy->center.x < game->spaceship.center.x)
-				enemy->jump_degree_delta = -PI / 35;
+				enemy->jump_degree_delta = -JUMPING_ENEMY_ROT_SPEED;
 			else
-				enemy->jump_degree_delta = PI / 35;	
+				enemy->jump_degree_delta = JUMPING_ENEMY_ROT_SPEED;	
 
 			continue;
 		}
@@ -38,12 +38,12 @@ void update_waiting_enemies(struct game_data *game)
 	game->enemy_minx += game->enemy_dx;
 	game->enemy_maxx += game->enemy_dx;
 
-	if (game->enemy_minx <= 30) {
-		game->enemy_dx = ENEMY_DX_DEFAULT;
+	if (game->enemy_minx <= ENEMY_W) {
+		game->enemy_dx = WAITING_ENEMY_SPEED;
 	}
 
-	if (game->enemy_maxx >= game->width - 30) {
-		game->enemy_dx = -ENEMY_DX_DEFAULT;
+	if (game->enemy_maxx >= game->width - ENEMY_W) {
+		game->enemy_dx = -WAITING_ENEMY_SPEED;
 	}
 }
 
@@ -143,10 +143,10 @@ void enemy_fire(struct game_data *game, SDL_Point center)
 			continue;
 
 		game->enemy_fires[i] = (struct fire_data) {
-			.center = {.x = center.x, .y = center.y + 10},
-			.y = center.y + 10,
+			.center = {.x = center.x, .y = center.y + ENEMY_H / 2},
+			.y = center.y + ENEMY_H / 2,
 			.dy = 1,
-			.speed = 16,
+			.speed = ENEMY_FIRE_SPEED,
 			.active = 1,
 			.image = IMAGE_ENEMY_FIRE
 		};
@@ -162,8 +162,9 @@ void kill_enemies(struct game_data *game)
 
 	for (i = 0; i < game->enemy_count; i++) {
 		struct spaceship_data *enemy = &game->enemies[i];
-		SDL_Rect enemy_rect = create_spaceship_rect(enemy);
-		SDL_Rect fire_rect = create_rect(game->spaceship_fire.center, 4, 13);
+		SDL_Rect enemy_rect = create_rect(enemy->center, ENEMY_W, ENEMY_H);
+		SDL_Rect fire_rect = create_rect(game->spaceship_fire.center,
+						 FIRE_W, FIRE_H);
 
 		if (enemy->state == STATE_DEAD || enemy->state == STATE_DYING)
 			continue;

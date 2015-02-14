@@ -5,8 +5,8 @@ void reset_game(struct game_data *game)
 {
 	game->lifes = 3;
 	game->done = 0;
-	game->width = 800;
-	game->height = 600;
+	game->width = GAME_W;
+	game->height = GAME_H;
 	game->spaceship_fire = (struct fire_data) {
 		.active = 0
 	};
@@ -19,7 +19,10 @@ void reset_game(struct game_data *game)
 void reset_player(struct spaceship_data *player)
 {
 	(*player) = (struct spaceship_data) {
-		.center = {.x = 315, .y = 550},
+		.center = {
+			.x = (GAME_W - PLAYER_W) / 2,
+			.y = PLAYER_X
+		},
 		.image = IMAGE_SHIP,
 		.frame = 0,
 		.animation = ANIM_SPACESHIP,
@@ -37,7 +40,8 @@ void reset_enemies(struct game_data *game)
 	for (i = 0; i < 2; i++) {
 		game->enemies[enemy_count++] = (struct spaceship_data) {
 			.center = {
-				.x = 162 + 132 * i, .y = 55
+				.x = ENEMY_X_MIN + (3 + 3 * i) * ENEMY_COL_DIST,
+				.y = ENEMY_Y_MIN
 			},
 			.image = IMAGE_ENEMY4A,
 			.animation = ANIM_NON_ATTACKING_2,
@@ -51,7 +55,8 @@ void reset_enemies(struct game_data *game)
 	for (i = 0; i < 6; i++) {
 		game->enemies[enemy_count++] = (struct spaceship_data) {
 			.center = {
-				.x = 118 + 44 * i, .y = 90
+				.x = ENEMY_X_MIN + (2 + i) * ENEMY_COL_DIST,
+				.y = ENEMY_Y_MIN + ENEMY_ROW_DIST
 			},
 			.image = IMAGE_ENEMY3A,
 			.animation = ANIM_NON_ATTACKING_1,
@@ -65,7 +70,8 @@ void reset_enemies(struct game_data *game)
 	for (i = 0; i < 8; i++) {
 		game->enemies[enemy_count++] = (struct spaceship_data) {
 			.center = {
-				.x = 74 + 44 * i, .y = 125
+				.x = ENEMY_X_MIN + (1 + i) * ENEMY_COL_DIST,
+				.y = ENEMY_Y_MIN + 2 * ENEMY_ROW_DIST
 			},
 			.image = IMAGE_ENEMY2A,
 			.animation = ANIM_NON_ATTACKING_1,
@@ -80,7 +86,8 @@ void reset_enemies(struct game_data *game)
 		for (i = 0; i < 10; i++) {
 			game->enemies[enemy_count++] = (struct spaceship_data) {
 				.center = {
-					.x = 30 + 44 * i, .y = 160 + 35 * j
+					.x = ENEMY_X_MIN + ENEMY_COL_DIST * i,
+					.y = ENEMY_Y_MIN + (3 + j) * ENEMY_ROW_DIST
 				},
 				.image = IMAGE_ENEMY1A,
 				.animation = ANIM_NON_ATTACKING_1,
@@ -109,5 +116,5 @@ void reset_enemies(struct game_data *game)
 			game->enemy_maxx = center.x;
 	}
 
-	game->enemy_dx = -ENEMY_DX_DEFAULT;
+	game->enemy_dx = -WAITING_ENEMY_SPEED;
 }

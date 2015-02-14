@@ -14,6 +14,7 @@ static void create_rotations(struct display_data *display, int image,
 			     SDL_Rect clip_rect);
 static void free_rotations(struct display_data *display);
 static void create_stars(struct display_data *display, struct game_data *game);
+static SDL_Rect create_spaceship_rect(struct spaceship_data *ship);
 
 struct display_data * display_init(struct game_data *game)
 {
@@ -196,7 +197,7 @@ static void free_images(struct display_data *display)
 		SDL_FreeSurface(display->images[i]);
 }
 
-SDL_Rect create_spaceship_rect(struct spaceship_data *ship)
+static SDL_Rect create_spaceship_rect(struct spaceship_data *ship)
 {
 	SDL_Rect image_rect = enemy_sprite_rect[ship->animation][ship->frame];
 	SDL_Rect spaceship_rect = create_rect(ship->center, image_rect.w, image_rect.h);

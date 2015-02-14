@@ -36,11 +36,11 @@ void game_handle_keypress(void *private, int keycode)
 		break;
 	case SDLK_LEFT:
 		if (ship->center.x > 30)
-			ship->center.x -= 8;
+			ship->center.x -= PLAYER_SPEED;
 		break;
 	case SDLK_RIGHT:
 		if (ship->center.x < game->width - 30)
-			ship->center.x += 8;
+			ship->center.x += PLAYER_SPEED;
 		break;
 	}
 }

@@ -3,20 +3,50 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-
 #include <nasos_data.h>
 
-#define PATH_MAX 4096
+/* Math constants */
+#define PI 3.1415
+#define EPS 1e-5
+
+/* Size constants */
+#define PATH_MAX 4096 /* file path, ... */
 #define ENEMIES_MAX 100
 #define FIRES_MAX 20
-#define ENEMY_DX_DEFAULT 5
+
+/*
+ * We precalculate different rotations of enemy images so we don't have to do
+ * this in realtime.
+ */
 #define ROTATION_COUNT 48
+
+/* Background stars */
 #define STAR_COUNT 128
 #define STAR_STEPS_MAX 1024
 #define STAR_SIZE_MAX 3
 
-#define PI 3.1415
-#define EPS 1e-5
+/* Speed constants */
+#define WAITING_ENEMY_SPEED 5
+#define JUMPING_ENEMY_SPEED 10
+#define JUMPING_ENEMY_ROT_SPEED (PI / 35)
+#define PLAYER_SPEED 8
+#define ENEMY_FIRE_SPEED 16
+#define PLAYER_FIRE_SPEED 24
+
+/* Game geometry */
+#define GAME_W 800
+#define GAME_H 800
+#define FIRE_W 4
+#define FIRE_H 13
+#define PLAYER_W 36
+#define PLAYER_H 56
+#define PLAYER_X 700
+#define ENEMY_W 30
+#define ENEMY_H 25
+#define ENEMY_Y_MIN 100
+#define ENEMY_ROW_DIST 35
+#define ENEMY_X_MIN 40
+#define ENEMY_COL_DIST 44
 
 
 /* Game structures, enums, ... */
@@ -168,7 +198,6 @@ void update_fires(struct game_data *game);
 struct display_data * display_init(struct game_data *);
 void display_destroy(struct display_data *);
 void display_render(struct display_data *, struct game_data *);
-SDL_Rect create_spaceship_rect(struct spaceship_data *ship);
 SDL_Rect create_rect(SDL_Point center, int w, int h);
 
 /* input.c */
