@@ -6,9 +6,21 @@ static void run_game_loop(struct display_data *display);
 
 int main()
 {
+	int done = 0;
 	struct display_data *display = display_init(GAME_W, GAME_H);
 
-	run_game_loop(display);
+	while (!done) {
+		int selected = run_menu_loop(display);
+		switch (selected)
+		{
+		case MENU_START:
+			run_game_loop(display);
+			break;
+		case MENU_QUIT:
+			done = 1;
+			break;
+		}
+	}
 
 	display_destroy(display);
 

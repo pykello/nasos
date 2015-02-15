@@ -16,6 +16,7 @@ AC_PROG_CC
 AC_CHECK_LIB([SDL2], [SDL_Init], [], [AC_MSG_ERROR([SDL2 library not found])])
 AC_CHECK_LIB([SDL2_gfx], [rotozoomSurface], [], [AC_MSG_ERROR([SDL2_gfx library not found])])
 AC_CHECK_LIB([SDL2_mixer], [Mix_OpenAudio], [], [AC_MSG_ERROR([SDL2_mixer library not found])])
+AC_CHECK_LIB([SDL2_ttf], [TTF_OpenFont], [], [AC_MSG_ERROR([SDL2_ttf library not found])])
 AC_CHECK_LIB([m], [cos], [], [AC_MSG_ERROR([math library not found])])
 
 # Checks for header files.

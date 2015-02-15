@@ -116,5 +116,31 @@ static int const timer_duration[] = {
 	[TIMER_FIRE] = 40
 };
 
+/* Menu Items */
+
+enum {
+	MENU_START = 0,
+	MENU_ABOUT,
+	MENU_QUIT,
+	MENU_COUNT
+};
+
+static char * const menu_text[] = {
+	[MENU_START] = "Start Game",
+	[MENU_ABOUT] = "About",
+	[MENU_QUIT] = "Quit"
+};
+
+
+/* Fonts */
+
+enum {
+	FONT_AVERIA = 0,
+	FONT_COUNT
+};
+
+static char * const font_filename[] = {
+	[FONT_AVERIA] = "averia-regular.ttf"
+};
 
 #endif

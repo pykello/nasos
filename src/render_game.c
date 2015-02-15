@@ -6,19 +6,17 @@ static void draw_spaceship(struct display_data *display,
 			   struct spaceship_data *spaceship);
 static void draw_fire(struct display_data *display,
 		      struct fire_data *fire);
-static void draw_star(struct display_data *display, struct star_data *star,
-		      int ticks, int height);
 static SDL_Rect create_spaceship_rect(struct spaceship_data *ship);
 
 void display_render_game(struct display_data *display, struct game_data *game)
 {
 	int i = 0;
-	int ticks = SDL_GetTicks();
 
 	SDL_Surface *surface = SDL_GetWindowSurface(display->window);
 	int black = SDL_MapRGB(surface->format, 0, 0, 0);
 	SDL_FillRect(surface, NULL, black);
 
+	draw_stars(display);
 	draw_lifes(display, game->lifes);
 	draw_spaceship(display, &game->player);
 	draw_fire(display, &game->player_fire);
@@ -28,9 +26,6 @@ void display_render_game(struct display_data *display, struct game_data *game)
 
 	for (i = 0; i < FIRES_MAX; i++)
 		draw_fire(display, &game->enemy_fires[i]);
-
-	for (i = 0; i < STAR_COUNT; i++)
-		draw_star(display, &display->stars[i], ticks, game->height);
 
 	SDL_UpdateWindowSurface(display->window);
 }
@@ -110,22 +105,6 @@ static void draw_fire(struct display_data *display,
 	if (fire->active)
 		SDL_BlitSurface(fire_surface, NULL,
 				screen_surface, &target_rect);
-}
-
-static void draw_star(struct display_data *display, struct star_data *star,
-		      int ticks, int height)
-{
-	SDL_Surface *screen_surface = SDL_GetWindowSurface(display->window);
-	int white = SDL_MapRGB(screen_surface->format, 200, 200, 200);
-	SDL_Rect rect = star->rect;
-	
-	int step = (star->step + ticks) % STAR_STEPS_MAX;
-	if (step < STAR_STEPS_MAX / 2)
-		return;
-
-	rect.y = (rect.y + ticks / 20) % height;
-
-	SDL_FillRect(screen_surface, &rect, white);
 }
 
 static SDL_Rect create_spaceship_rect(struct spaceship_data *ship)

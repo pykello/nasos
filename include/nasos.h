@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 #include <nasos_data.h>
 
 /* Math constants */
@@ -50,6 +51,11 @@
 #define LIFE_LEFT 80
 #define LIFE_DIST 5
 #define LIFE_BOTTOM 20
+
+/* Menu */
+#define MENU_TOP 200
+#define MENU_ROW_DIST 80
+#define MENU_FONT_SIZE 64
 
 
 /* Game structures, enums, ... */
@@ -169,6 +175,15 @@ struct mixer_data {
 };
 
 
+/* Menu structures */
+
+struct menu_data {
+	int current;
+	int selected;
+	TTF_Font *font;
+};
+
+
 /* gameplay.c */
 struct game_data * game_init(void);
 void game_destroy(struct game_data *);
@@ -200,10 +215,14 @@ void update_fires(struct game_data *game);
 /* display.c */
 struct display_data * display_init(int w, int h);
 void display_destroy(struct display_data *);
+void draw_stars(struct display_data *);
 
 /* render_game.c */
 void display_render_game(struct display_data *, struct game_data *);
 SDL_Rect create_rect(SDL_Point center, int w, int h);
+
+/* menu.c */
+int run_menu_loop(struct display_data *);
 
 /* input.c */
 struct input_data * input_init(void (*)(void *, int), void *);

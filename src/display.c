@@ -8,6 +8,8 @@ static void create_rotations(struct display_data *display, int image,
 			     SDL_Rect clip_rect);
 static void free_rotations(struct display_data *display);
 static void create_stars(struct display_data *display, int w, int h);
+static void draw_star(struct display_data *display, struct star_data *star,
+		      int ticks);
 
 struct display_data * display_init(int w, int h)
 {
@@ -140,3 +142,29 @@ static void create_stars(struct display_data *display, int w, int h)
 		};
 	}
 }
+
+void draw_stars(struct display_data *display)
+{
+	int ticks = SDL_GetTicks();
+	int i = 0;
+	for (i = 0; i < STAR_COUNT; i++)
+		draw_star(display, &display->stars[i], ticks);
+}
+
+static void draw_star(struct display_data *display, struct star_data *star,
+		      int ticks)
+{
+	SDL_Surface *screen_surface = SDL_GetWindowSurface(display->window);
+	int height = screen_surface->h;
+	int white = SDL_MapRGB(screen_surface->format, 200, 200, 200);
+	SDL_Rect rect = star->rect;
+	
+	int step = (star->step + ticks) % STAR_STEPS_MAX;
+	if (step < STAR_STEPS_MAX / 2)
+		return;
+
+	rect.y = (rect.y + ticks / 20) % height;
+
+	SDL_FillRect(screen_surface, &rect, white);
+}
+
