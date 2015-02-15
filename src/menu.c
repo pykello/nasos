@@ -5,6 +5,7 @@
 
 static void menu_handle_keypress(void *private, int keycode);
 static void render_menu(struct display_data *display, struct menu_data *menu);
+static void draw_logo(struct display_data * display);
 static void draw_menu_items(struct display_data *display, struct menu_data *menu);
 static TTF_Font * load_font(int font_id, int size);
 
@@ -62,9 +63,25 @@ static void render_menu(struct display_data *display, struct menu_data *menu)
 	SDL_FillRect(surface, NULL, black);
 
 	draw_stars(display);
+	draw_logo(display);
 	draw_menu_items(display, menu);
 
 	SDL_UpdateWindowSurface(display->window);
+}
+
+static void draw_logo(struct display_data * display)
+{
+	SDL_Surface *screen_surface = SDL_GetWindowSurface(display->window);
+	SDL_Surface *logo = display->images[IMAGE_LOGO];
+
+	SDL_Rect rect = {
+		.x = (screen_surface->w - logo->w) / 2,
+		.y = LOGO_TOP,
+		.w = logo->w,
+		.h = logo->h
+	};
+
+	SDL_BlitSurface(logo, NULL, screen_surface, &rect);
 }
 
 static void draw_menu_items(struct display_data *display, struct menu_data *menu)

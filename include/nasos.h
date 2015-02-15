@@ -52,11 +52,11 @@
 #define LIFE_DIST 5
 #define LIFE_BOTTOM 20
 
-/* Menu */
-#define MENU_TOP 200
+/* Intro screen */
+#define MENU_TOP 375
 #define MENU_ROW_DIST 80
-#define MENU_FONT_SIZE 64
-
+#define MENU_FONT_SIZE 48
+#define LOGO_TOP 150
 
 /* Game structures, enums, ... */
 

@@ -17,6 +17,7 @@ enum image_id {
 	IMAGE_ENEMY_DYING,
 	IMAGE_PLAYER_DYING,
 	IMAGE_LIFE,
+	IMAGE_LOGO,
 	IMAGE_COUNT
 };
 
@@ -30,7 +31,8 @@ static char * const image_filename[] = {
 	[IMAGE_ENEMY_FIRE] = "enemy_fire.bmp",
 	[IMAGE_ENEMY_DYING] = "enemy_dying.bmp",
 	[IMAGE_PLAYER_DYING] = "ship_dying.bmp",
-	[IMAGE_LIFE] = "life.bmp"
+	[IMAGE_LIFE] = "life.bmp",
+	[IMAGE_LOGO] = "logo.bmp"
 };
 
 
