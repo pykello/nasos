@@ -25,13 +25,13 @@ void input_dispatch_events(struct input_data *input)
 	SDL_Event sdl_event;
 
 	while (SDL_PollEvent(&sdl_event)) {
-		if (sdl_event.type != SDL_KEYDOWN)
-			continue;
-
-		if (sdl_event.key.keysym.sym != SDLK_LEFT &&
+		if (sdl_event.type == SDL_KEYDOWN &&
+			sdl_event.key.keysym.sym != SDLK_LEFT &&
 		    sdl_event.key.keysym.sym != SDLK_RIGHT)
+		{
 			input->handle_input_func(input->private,
-						 sdl_event.key.keysym.sym);
+									 sdl_event.key.keysym.sym);
+		}
 	}
 
 	check_arrow_key(input, SDL_SCANCODE_LEFT, SDLK_LEFT, 0);

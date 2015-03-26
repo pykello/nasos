@@ -26,6 +26,7 @@ void game_handle_keypress(void *private, int keycode)
 
 	switch (keycode) {
 	case 'q':
+	case SDLK_ESCAPE:
 		game->done = 1;
 		break;
 	case 'r':
