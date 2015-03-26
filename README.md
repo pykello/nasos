@@ -3,6 +3,8 @@
 Nasos is an open source clone of [Galaxian][galaxian]. My goal was to do some
 project using [SDL2][sdl2], and have some fun writing some code.
 
+![Screenshot](screenshot.png)
+
 
 # Installing and running
 
