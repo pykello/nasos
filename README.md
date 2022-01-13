@@ -14,6 +14,10 @@ First you need to install some requirements:
 # Fedora, Redhat, CentOS
 sudo yum install autoconf automake libtool
 sudo yum install SDL2-devel SDL2_gfx-devel SDL2_mixer-devel SDL2_ttf-devel
+
+# Ubuntu
+sudo apt install autoconf automake libtool
+sudo apt install libsdl2-dev libsdl2-gfx-dev libsdl2-mixer-dev libsdl2-ttf-dev
 ```
 
 Now, you can compile the game:
